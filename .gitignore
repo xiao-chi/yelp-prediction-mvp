@@ -1,0 +1,5 @@
+.DS_Store
+.ipynb_checkpoints
+
+datasets/american_reviews.csv
+yelp_academic_dataset_business.json
