@@ -55,10 +55,10 @@ model = sm.OLS(y.astype(float), x.astype(float)).fit()
 
 colors = {
     'background': '#111111',
-    'text': '#7FDBFF'
+    'text': '#B70000'
 }
 
-insights_layout = html.Div(style={'fontFamily': 'helvetica'}, children=[
+insights_layout = html.Div(style={'fontFamily': 'Tw Cen MT'}, children=[
     html.H1(
         children='Restaurants Insights Dashboard',
         style={
@@ -99,96 +99,107 @@ insights_layout = html.Div(style={'fontFamily': 'helvetica'}, children=[
     dcc.Link('Go back to home', href='/'),
 ])
 
+
+#PREDICTION API
 prediction_layout = html.Div(children=[
     html.H1(
         children='Rating Prediction',
         style={
             'textAlign': 'center',
-            'color': colors['text']
+            'color': colors['text'],
+            'fontFamily': 'Century Gothic'
         }
     ),
+
+    #Column 1
     html.Div([
-        html.Label('Noise Level'),
-        dcc.Slider(
-           id='slider_noise',
-           min=0,
-           max=3,
-           marks={
-               0: 'Quiet',
-               1: 'Average',
-               2: 'Loud',
-               3: 'Very Loud'
-           },
-           value=1
-        )],
-        style={'marginLeft': 25, 'width': '60%'}
-    ),
-    html.Br(),
+        html.Div([
+            html.Label('Noise Level'),
+            dcc.Slider(
+                id='slider_noise',
+                min=0,
+                max=3,
+                marks={
+                    0: 'Quiet',
+                    1: 'Average',
+                    2: 'Loud',
+                    3: 'Very Loud'
+                },
+                value=1
+            )],
+            style={'marginLeft': 25, 'width': '60%'}
+        ),
+        html.Br(),
+        html.Div([
+            html.Label('Ambience'),
+            dcc.Checklist(
+                id='ambience_checkbox',
+                options=[
+                    {'label': 'Trendy', 'value': 'trendy'},
+                    {'label': 'Romantic', 'value': 'romantic'},
+                    {'label': 'Classy', 'value': 'classy'},
+                    {'label': 'Intimate', 'value': 'intimate'},
+                    {'label': 'Casual', 'value': 'casual'},
+                    {'label': 'Hipster', 'value': 'hipster'},
+                    {'label': 'Touristy', 'value': 'touristy'},
+                    {'label': 'Upscale', 'value': 'upscale'}
+                ],
+                values=[],
+                labelStyle={'display': 'inline-block'}
+            )
+        ]),
+        html.Br(),
+        html.Div([
+            html.Label('Good For'),
+            dcc.Checklist(
+                id='good_for_checkbox',
+                options=[
+                    {'label': 'Breakfast', 'value': 'breakfast'},
+                    {'label': 'Brunch', 'value': 'brunch'},
+                    {'label': 'Lunch', 'value': 'lunch'},
+                    {'label': 'Dinner', 'value': 'dinner'},
+                    {'label': 'Dessert', 'value': 'dessert'},
+                    {'label': 'Late Night', 'value': 'late_night'}
+                ],
+                values=[],
+                labelStyle={'display': 'inline-block'}
+            )
+        ]),
+        html.Br(),
+        html.Div([
+            html.Label('Parking'),
+            dcc.Checklist(
+                id='parking_checkbox',
+                options=[
+                    {'label': 'Garage', 'value': 'garage'},
+                    {'label': 'Street', 'value': 'street'},
+                    {'label': 'Lot', 'value': 'lot'},
+                    {'label': 'Validated', 'value': 'validated'},
+                    {'label': 'Valet', 'value': 'valet'}
+                ],
+                values=[],
+                labelStyle={'display': 'inline-block'}
+            )
+        ])], style={'width': '33%', 'display': 'inline-block'}),
+    # Column 2
     html.Div([
-        html.Label('Ambience'),
-        dcc.Checklist(
-            id='ambience_checkbox',
-            options=[
-                {'label': 'Trendy', 'value': 'trendy'},
-                {'label': 'Romantic', 'value': 'romantic'},
-                {'label': 'Classy', 'value': 'classy'},
-                {'label': 'Intimate', 'value': 'intimate'},
-                {'label': 'Casual', 'value': 'casual'},
-                {'label': 'Hipster', 'value': 'hipster'},
-                {'label': 'Touristy', 'value': 'touristy'},
-                {'label': 'Upscale', 'value': 'upscale'}
-            ],
-            values=[],
-            labelStyle={'display': 'inline-block'}
-        )
-    ]),
-    html.Br(),
+        html.Div([
+            html.Label('Number of Negative Reviews'),
+            dcc.Input(id='neg_reviews_keypress', type='number', min='0', value='0'),
+        ]),
+        html.Br(),
+        html.Div([
+            html.Label('Total Number of Reviews'),
+            dcc.Input(id='review_count_keypress', type='number', min='0', value='0'),
+        ]),
+        html.Button(id='submit_button', n_clicks=0, children='Submit')],
+        style={'width': '33%', 'display': 'inline-block'}),
+
+    # Column 3
     html.Div([
-        html.Label('Good For'),
-        dcc.Checklist(
-            id='good_for_checkbox',
-            options=[
-                {'label': 'Breakfast', 'value': 'breakfast'},
-                {'label': 'Brunch', 'value': 'brunch'},
-                {'label': 'Lunch', 'value': 'lunch'},
-                {'label': 'Dinner', 'value': 'dinner'},
-                {'label': 'Dessert', 'value': 'dessert'},
-                {'label': 'Late Night', 'value': 'late_night'}
-            ],
-            values=[],
-            labelStyle={'display': 'inline-block'}
-        )
-    ]),
-    html.Br(),
-    html.Div([
-        html.Label('Parking'),
-        dcc.Checklist(
-            id='parking_checkbox',
-            options=[
-                {'label': 'Garage', 'value': 'garage'},
-                {'label': 'Street', 'value': 'street'},
-                {'label': 'Lot', 'value': 'lot'},
-                {'label': 'Validated', 'value': 'validated'},
-                {'label': 'Valet', 'value': 'valet'}
-            ],
-            values=[],
-            labelStyle={'display': 'inline-block'}
-        )
-    ]),
-    html.Br(),
-    html.Div([
-        html.Label('Number of Negative Reviews'),
-        dcc.Input(id='neg_reviews_keypress', type='number', min='0', value='0'),
-    ]),
-    html.Br(),
-    html.Div([
-        html.Label('Total Number of Reviews'),
-        dcc.Input(id='review_count_keypress', type='number', min='0', value='0'),
-    ]),
-    #html.Button(id='submit_button', n_clicks=0, children='Submit'),
-    html.Br(),
-    html.Label('Yelp Rating Prediction'),
-    html.H1(children='0.0', id='rating_prediction'),
+        html.Label('Yelp Rating Prediction'),
+        html.H1(children='0.0', id='rating_prediction')],
+        style={'width': '33%', 'display': 'inline-block', 'float': 'right'}),
     html.Div(id='prediction-content'),
     html.Br(),
     dcc.Link('Go back to home', href='/')
@@ -208,15 +219,15 @@ def display_page(pathname):
 
 
 @app.callback(dash.dependencies.Output('rating_prediction', 'children'),
-              #[dash.dependencies.Input('submit_button', 'n_clicks')], add to parameter
-              [dash.dependencies.Input('slider_noise', 'value'),
-               dash.dependencies.Input('ambience_checkbox', 'values'),
-               dash.dependencies.Input('good_for_checkbox', 'values'),
-               dash.dependencies.Input('parking_checkbox', 'values'),
-               dash.dependencies.Input('neg_reviews_keypress', 'value'),
-               dash.dependencies.Input('review_count_keypress', 'value')
+              [dash.dependencies.Input('submit_button', 'n_clicks')],
+              [dash.dependencies.State('slider_noise', 'value'),
+               dash.dependencies.State('ambience_checkbox', 'values'),
+               dash.dependencies.State('good_for_checkbox', 'values'),
+               dash.dependencies.State('parking_checkbox', 'values'),
+               dash.dependencies.State('neg_reviews_keypress', 'value'),
+               dash.dependencies.State('review_count_keypress', 'value')
                ])
-def prediction(noise_level, ambiences, good_fors, parkings, neg_reviews, review_count):
+def prediction(n_clicks, noise_level, ambiences, good_fors, parkings, neg_reviews, review_count):
     trendy = False
     good_for_dinner = False
     good_for_brunch = False
