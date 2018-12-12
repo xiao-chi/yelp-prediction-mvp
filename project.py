@@ -240,6 +240,7 @@ def prediction(noise_level, ambiences, good_fors, parkings, neg_reviews, review_
                parking_street, parking_lot, quiet, neg_reviews]]
     star_prediction = model.predict(inputs)
     stars = 5.0 if star_prediction[0] > 5 else star_prediction[0]
+    stars = 1.0 if stars < 1 else stars
     return '{:.2f}'.format(stars)
 
 
