@@ -44,7 +44,7 @@ for y in range(0, 6):
     neg_topics_avg.append(avg * 100)
 
 price_range = [1, 2, 3, 4]
-cuisines = ['Italian', 'American', 'Canadian']
+cuisines = ['Italian', 'American', 'Chinese']
 
 data = pd.read_csv('datasets/vegas_sme_dataset.csv')
 y = data["stars"]
