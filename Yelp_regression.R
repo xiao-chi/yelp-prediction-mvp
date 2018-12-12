@@ -180,6 +180,7 @@ stars_reviews10 = lm(stars ~ ambience_romantic + ambience_classy
                     + full_bar + smoking_yes + wifi_free + noise_quiet 
                     + neighborhood + negative_reviews, data=new_american)
 anova(stars_reviews10) # rmove ambience_touristy, parking_valet, wifi_free
+summary(stars_reviews10)
 
 stars_reviews11 = lm(stars ~ ambience_romantic + ambience_classy
                      + ambience_hipster + ambience_trendy + ambience_casual
@@ -204,6 +205,13 @@ stars_reviews12 = lm(stars ~ ambience_romantic + ambience_classy + ambience_hips
 anova(stars_reviews12) # FINAL MODEL
 summary(stars_reviews12) # Adjusted R-squared:  0.3018 
 
+# remove good_for_breakfast, romantic, parking_lot
+stars_reviews13 = lm(stars ~  ambience_classy + ambience_hipster + ambience_trendy 
+                     + ambience_casual + review_count + good_for_brunch 
+                     + parking_garage + parking_street + noise_quiet 
+                     + neighborhood + negative_reviews, data=new_american)
+summary(stars_reviews13) # Adjusted R-squared: 0.2955
+anova(stars_reviews13)
 ######################################################
 #### Model y = stars, x = 3 other type of reviews ####
 star_review_type = lm(stars ~ negative_reviews + neutral_reviews + positive_reviews, data = new_american)
