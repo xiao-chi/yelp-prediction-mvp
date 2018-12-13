@@ -63,7 +63,7 @@ model = sm.OLS(y.astype(float), x1.astype(float)).fit()
 
 insights_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
     html.H1(
-        children='Restaurants Insights Dashboard',
+        children='Restaurant Insights Dashboard',
         style={
             'textAlign': 'center',
             'color': colors['text']
@@ -115,6 +115,27 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             'color': colors['text']
         }
     ),
+    html.Div([
+        dcc.Dropdown(
+            id='cities_dropdown_2',
+            options=[{'label': i, 'value': i} for i in available_cities],
+            value='Las Vegas',
+            placeholder='City'
+        )], style={'width': '33%', 'display': 'inline-block'}),
+    html.Div([
+    dcc.Dropdown(
+        id='cuisines_dropdown_2',
+        options=[{'label': i, 'value': i} for i in cuisines],
+        value='American',
+        placeholder='Cuisine'
+    )], style={'width': '33%', 'display': 'inline-block'}),
+    html.Div([
+    dcc.Dropdown(
+        id='price_ranges_dropdown_2',
+        options=[{'label': i, 'value': i} for i in price_ranges],
+        value=2,
+        placeholder='Restaurant Price Range'
+    )], style={'width': '33%', 'display': 'inline-block'}),
 
     #Column 1
     html.Div([
