@@ -183,6 +183,7 @@ def feature_breakdown(cuisine, location, price_range_value):
     file_name = file_name.lower()
     file_name += '_restaurants.csv'
     dataset.to_csv(file_name, mode='w', encoding='utf-8', index=False)
+    print('dataset collected and written to: ' + file_name)
 
 
 def main(argv):
