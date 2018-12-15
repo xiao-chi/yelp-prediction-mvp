@@ -60,24 +60,28 @@ insights_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             'color': colors['text']
         }
     ),
-    dcc.Dropdown(
-        id='cities_dropdown',
-        options=[{'label': i, 'value': i} for i in available_cities],
-        value='Las Vegas',
-        placeholder='City'
-    ),
-    dcc.Dropdown(
-        id='cuisines_dropdown',
-        options=[{'label': i, 'value': i} for i in cuisines],
-        value='American',
-        placeholder='Cuisine'
-    ),
-    dcc.Dropdown(
-        id='price_ranges_dropdown',
-        options=[{'label': i, 'value': i} for i in price_ranges],
-        value=2,
-        placeholder='Restaurant Price Range'
-    ),
+    html.Div([
+        html.Div(['City'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='cities_dropdown',
+            options=[{'label': i, 'value': i} for i in available_cities],
+            value='Las Vegas',
+            placeholder='City'
+        )]),
+    html.Div([
+        html.Div(['Cuisine'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='cuisines_dropdown',
+            options=[{'label': i, 'value': i} for i in cuisines],
+            value='American',
+        )]),
+    html.Div([
+        html.Div(['Price Range'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='price_ranges_dropdown',
+            options=[{'label': i, 'value': i} for i in price_ranges],
+            value=2,
+        )]),
     html.Iframe(id='map', srcDoc=open('maps/lasvegas_american_2.html', 'r').read(), width='100%', height='600'),
     html.Div(id='insights-content'),
     html.Br(),
@@ -425,7 +429,7 @@ def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, music
         inputs = [[constant, intimate, good_for_late_night, review_count, best_night_monday, full_bar,
                    music_live, free_wifi, no_wifi, very_loud, average, neg_reviews]]
         model = toronto_italian_3_model
-    elif city == 'Las Vegas' and cuisine == 'American' and price is 3:
+    elif city == 'Las Vegas' and cuisine == 'American' and price is 2:
         # LV American 2
         inputs = [[constant, classy, trendy, good_for_dinner, review_count, good_for_brunch, parking_garage,
                    parking_street, parking_lot, no_alcohol, full_bar, best_night_friday, free_wifi,
