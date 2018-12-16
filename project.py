@@ -52,15 +52,6 @@ for y in range(0, 6):
 price_ranges = [1, 2, 3, 4]
 cuisines = ['Italian', 'American', 'Chinese']
 
-data = pd.read_csv('datasets/vegas_sme_dataset.csv')
-y = data["stars"]
-x = data[['ambience_classy', 'ambience_trendy', 'good_for_dinner', 'review_count', 'good_for_brunch', 'parking_garage',
-          'parking_street', 'parking_lot', 'none', 'full_bar', 'bestnight_friday', 'wifi_free',
-          'noise_quiet', 'negative_reviews']]
-x1 = sm.add_constant(x)
-model = sm.OLS(y.astype(float), x1.astype(float)).fit()
-
-
 insights_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
     html.H1(
         children='Restaurant Insights Dashboard',
@@ -69,24 +60,28 @@ insights_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             'color': colors['text']
         }
     ),
-    dcc.Dropdown(
-        id='cities_dropdown',
-        options=[{'label': i, 'value': i} for i in available_cities],
-        value='Las Vegas',
-        placeholder='City'
-    ),
-    dcc.Dropdown(
-        id='cuisines_dropdown',
-        options=[{'label': i, 'value': i} for i in cuisines],
-        value='American',
-        placeholder='Cuisine'
-    ),
-    dcc.Dropdown(
-        id='price_ranges_dropdown',
-        options=[{'label': i, 'value': i} for i in price_ranges],
-        value=2,
-        placeholder='Restaurant Price Range'
-    ),
+    html.Div([
+        html.Div(['City'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='cities_dropdown',
+            options=[{'label': i, 'value': i} for i in available_cities],
+            value='Las Vegas',
+            placeholder='City'
+        )]),
+    html.Div([
+        html.Div(['Cuisine'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='cuisines_dropdown',
+            options=[{'label': i, 'value': i} for i in cuisines],
+            value='American',
+        )]),
+    html.Div([
+        html.Div(['Price Range'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='price_ranges_dropdown',
+            options=[{'label': i, 'value': i} for i in price_ranges],
+            value=2,
+        )]),
     html.Iframe(id='map', srcDoc=open('maps/lasvegas_american_2.html', 'r').read(), width='100%', height='600'),
     html.Div(id='insights-content'),
     html.Br(),
@@ -106,7 +101,7 @@ def render_map(city, cuisine, price_range):
     return open(file_to_open, 'r').read()
 
 
-#PREDICTION API
+# PREDICTION API
 prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
     html.H1(
         children='Rating Prediction',
@@ -116,6 +111,7 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
         }
     ),
     html.Div([
+        html.Div(['City'], style={'font-weight': 'bold'}),
         dcc.Dropdown(
             id='cities_dropdown_2',
             options=[{'label': i, 'value': i} for i in available_cities],
@@ -123,21 +119,21 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             placeholder='City'
         )], style={'width': '33%', 'display': 'inline-block'}),
     html.Div([
-    dcc.Dropdown(
-        id='cuisines_dropdown_2',
-        options=[{'label': i, 'value': i} for i in cuisines],
-        value='American',
-        placeholder='Cuisine'
-    )], style={'width': '33%', 'display': 'inline-block'}),
+        html.Div(['Cuisine'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='cuisines_dropdown_2',
+            options=[{'label': i, 'value': i} for i in cuisines],
+            value='American',
+        )], style={'width': '33%', 'display': 'inline-block'}),
     html.Div([
-    dcc.Dropdown(
-        id='price_ranges_dropdown_2',
-        options=[{'label': i, 'value': i} for i in price_ranges],
-        value=2,
-        placeholder='Restaurant Price Range'
-    )], style={'width': '33%', 'display': 'inline-block'}),
+        html.Div(['Price Range'], style={'font-weight': 'bold'}),
+        dcc.Dropdown(
+            id='price_ranges_dropdown_2',
+            options=[{'label': i, 'value': i} for i in price_ranges],
+            value=2,
+        )], style={'width': '33%', 'display': 'inline-block'}),
 
-    #Column 1
+    # Column 1
     html.Div([
         html.H3(children="Business Features"),
         html.Div([
@@ -190,6 +186,21 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
         ),
         html.Br(),
         html.Div([
+            html.Div(['Music'], style={'font-weight': 'bold'}),
+            dcc.Checklist(
+                id='music_checkbox',
+                options=[
+                    {'label': 'None', 'value': 'none'},
+                    {'label': 'Background', 'value': 'background'},
+                    {'label': 'Live', 'value': 'live'},
+                    {'label': 'DJ', 'value': 'dj'},
+                    {'label': 'Karaoke', 'value': 'karaoke'}
+                ],
+                values=[],
+                labelStyle={'display': 'inline-block'}
+            )]
+        ),
+        html.Div([
             html.Div(['Ambience'], style={'font-weight': 'bold'}),
             dcc.Checklist(
                 id='ambience_checkbox',
@@ -199,13 +210,12 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
                     {'label': 'Classy', 'value': 'classy'},
                     {'label': 'Casual', 'value': 'casual'},
                     {'label': 'Hipster', 'value': 'hipster'},
-                    {'label': 'Touristy', 'value': 'touristy'}
+                    {'label': 'Intimate', 'value': 'intimate'}
                 ],
                 values=[],
                 labelStyle={'display': 'inline-block'}
             )
         ]),
-        html.Br(),
         html.Div([
             html.Div(['Good For'], style={'font-weight': 'bold'}),
             dcc.Checklist(
@@ -222,7 +232,6 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
                 labelStyle={'display': 'inline-block'}
             )
         ]),
-        html.Br(),
         html.Div([
             html.Div(['Best Night'], style={'font-weight': 'bold'}),
             dcc.Checklist(
@@ -240,7 +249,6 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
                 labelStyle={'display': 'inline-block'}
             )
         ]),
-        html.Br(),
         html.Div([
             html.Div(['Parking'], style={'font-weight': 'bold'}),
             dcc.Checklist(
@@ -304,6 +312,7 @@ def display_page(pathname):
     else:
         return index_page
 
+
 @app.callback(dash.dependencies.Output('review_count_keypress', 'value'),
               [dash.dependencies.Input('pos_reviews_keypress', 'value'),
                dash.dependencies.Input('neu_reviews_keypress', 'value'),
@@ -312,59 +321,129 @@ def display_page(pathname):
 def calculate_total_reviews(pos_count, neu_count, neg_count):
     return int(pos_count) + int(neu_count) + int(neg_count)
 
+
+# MODELS
+data = pd.read_csv('datasets/vegas_sme_dataset.csv')
+y = data["stars"]
+x = data[['ambience_classy', 'ambience_trendy', 'good_for_dinner', 'review_count', 'good_for_brunch', 'parking_garage',
+          'parking_street', 'parking_lot', 'none', 'full_bar', 'bestnight_friday', 'wifi_free',
+          'noise_quiet', 'negative_reviews']]
+x = sm.add_constant(x)
+vegas_american_2_model = sm.OLS(y.astype(float), x.astype(float)).fit()
+
+# LV Italian PR2
+data1 = pd.read_csv('datasets/lasvegas_italian_pr2_restaurants.csv')
+y1 = data1["stars"]
+x1 = data1[['ambience_classy', 'ambience_trendy', 'good_for_dinner', 'review_count', 'good_for_brunch',
+            'parking_garage', 'parking_street', 'parking_lot', 'no_alcohol', 'full_bar', 'bestnight_friday',
+            'wifi_free', 'noise_quiet', 'negative_reviews']]
+x1 = sm.add_constant(x1)
+vegas_italian_2_model = sm.OLS(y1.astype(float), x1.astype(float)).fit()
+
+# Toronto Italian PR2
+data2 = pd.read_csv('datasets/toronto_italian_pr2_restaurants.csv')
+y2 = data2["stars"]
+x2 = data2[['ambience_romantic', 'ambience_hipster', 'ambience_casual', 'good_for_dinner', 'review_count',
+            'bestnight_monday', 'full_bar', 'music_dj', 'noise_loud', 'positive_reviews']]
+x2 = sm.add_constant(x2)
+toronto_italian_2_model = sm.OLS(y2.astype(float), x2.astype(float)).fit()
+
+# Toronto Italian PR3
+data3 = pd.read_csv('datasets/toronto_italian_pr3_restaurants.csv')
+y3 = data3["stars"]
+x3 = data3[['ambience_intimate', 'good_for_latenight', 'review_count', 'bestnight_monday', 'full_bar',
+            'music_live', 'wifi_free', 'wifi_no', 'noise_very_loud', 'noise_average', 'negative_reviews']]
+x3 = sm.add_constant(x3)
+toronto_italian_3_model = sm.OLS(y3.astype(float), x3.astype(float)).fit()
+
+
 @app.callback(dash.dependencies.Output('rating_prediction', 'children'),
               [dash.dependencies.Input('submit_button', 'n_clicks')],
-              [dash.dependencies.State('slider_noise', 'value'),
+              [dash.dependencies.State('cities_dropdown_2', 'value'),
+               dash.dependencies.State('cuisines_dropdown_2', 'value'),
+               dash.dependencies.State('price_ranges_dropdown_2', 'value'),
+               dash.dependencies.State('slider_noise', 'value'),
                dash.dependencies.State('slider_wifi', 'value'),
                dash.dependencies.State('slider_alcohol', 'value'),
+               dash.dependencies.State('music_checkbox', 'values'),
                dash.dependencies.State('ambience_checkbox', 'values'),
                dash.dependencies.State('good_for_checkbox', 'values'),
                dash.dependencies.State('best_night_checkbox', 'values'),
                dash.dependencies.State('parking_checkbox', 'values'),
+               dash.dependencies.State('pos_reviews_keypress', 'value'),
                dash.dependencies.State('neg_reviews_keypress', 'value'),
                dash.dependencies.State('review_count_keypress', 'value')
                ])
-def prediction(n_clicks, noise_level, wifi, alcohol, ambiences, good_fors, best_nights,
-               parkings, neg_reviews, review_count):
-    free_wifi = False
-    no_alcohol = False
-    full_bar = False
-    quiet = False
-    trendy = False
-    classy = False
-    good_for_dinner = False
-    good_for_brunch = False
-    best_night_friday = False
-    parking_garage = False
-    parking_lot = False
-    parking_street = False
-
+def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, musics, ambiences, good_fors, best_nights,
+               parkings, pos_reviews, neg_reviews, review_count):
+    pos_reviews = int(pos_reviews)
     neg_reviews = int(neg_reviews)
     review_count = int(review_count)
     constant = 1.0
 
+    no_wifi = True if wifi is 0 else False
     free_wifi = True if wifi is 1 else False
+
     no_alcohol = True if alcohol is 0 else False
     full_bar = True if alcohol is 2 else False
+
     quiet = True if noise_level is 0 else False
+    average = True if noise_level is 1 else False
+    loud = True if noise_level is 2 else False
+    very_loud = True if noise_level is 3 else False
+
     trendy = True if 'trendy' in ambiences else False
     classy = True if 'classy' in ambiences else False
+    romantic = True if 'romantic' in ambiences else False
+    intimate = True if 'intimate' in ambiences else False
+    hipster = True if 'hipster' in ambiences else False
+    casual = True if 'casual' in ambiences else False
+
     good_for_dinner = True if 'dinner' in good_fors else False
     good_for_brunch = True if 'brunch' in good_fors else False
+    good_for_late_night = True if 'late_night' in good_fors else False
+
+    best_night_monday = True if 'Monday' in best_nights else False
     best_night_friday = True if 'Friday' in best_nights else False
+
     parking_garage = True if 'garage' in parkings else False
     parking_lot = True if 'lot' in parkings else False
     parking_street = True if 'street' in parkings else False
-    inputs = [[constant, classy, trendy, good_for_dinner, review_count, good_for_brunch, parking_garage,
-               parking_street, parking_lot, no_alcohol, full_bar, best_night_friday, free_wifi,
-               quiet, neg_reviews]]
 
-    star_prediction = model.predict(inputs)
+    music_dj = True if 'dj' in musics else False
+    music_live = True if 'live' in musics else False
+
+    inputs = [[]]
+    model = None
+
+    if city == 'Las Vegas' and cuisine == 'Italian' and price is 2:
+        inputs = [[constant, classy, trendy, good_for_dinner, review_count, good_for_brunch, parking_garage,
+                   parking_street, parking_lot, no_alcohol, full_bar, best_night_friday, free_wifi,
+                   quiet, neg_reviews]]
+        model = vegas_italian_2_model
+    elif city == 'Toronto' and cuisine == 'Italian' and price is 2:
+        inputs = [[constant, romantic, hipster, casual, good_for_dinner, review_count, best_night_monday,
+                   full_bar, music_dj, loud, pos_reviews]]
+        model = toronto_italian_2_model
+    elif city == 'Toronto' and cuisine == 'Italian' and price is 3:
+        inputs = [[constant, intimate, good_for_late_night, review_count, best_night_monday, full_bar,
+                   music_live, free_wifi, no_wifi, very_loud, average, neg_reviews]]
+        model = toronto_italian_3_model
+    elif city == 'Las Vegas' and cuisine == 'American' and price is 2:
+        # LV American 2
+        inputs = [[constant, classy, trendy, good_for_dinner, review_count, good_for_brunch, parking_garage,
+                   parking_street, parking_lot, no_alcohol, full_bar, best_night_friday, free_wifi,
+                   quiet, neg_reviews]]
+        model = vegas_american_2_model
+
+    star_prediction = [1.0]
+    if model is not None:
+        star_prediction = model.predict(inputs)
     stars = 5.0 if star_prediction[0] > 5 else star_prediction[0]
     stars = 1.0 if stars < 1 else stars
     return '{:.2f}'.format(stars)
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8050, host='127.0.0.1')
-app.run_server(debug=True)
+    app.run_server(debug=False, port=8050, host='127.0.0.1')
+app.run_server(debug=False)
