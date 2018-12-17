@@ -12,13 +12,15 @@
 
 import json
 import pandas as pd
-import sys, getopt
+import numpy as np
+import sys
+import getopt
 from ast import literal_eval
 from datetime import datetime
 from datetime import timedelta
 from pandas.io.json import json_normalize
 
-# total time open in week
+# total time open in hours
 def total_time_in_hours(time):
     l = time.split('-')
     s1 = l[0]
@@ -27,8 +29,8 @@ def total_time_in_hours(time):
     tdelta = datetime.strptime(s2, FMT) - datetime.strptime(s1, FMT)
     if tdelta.days < 0:
         tdelta = timedelta(days=0,seconds=tdelta.seconds, microseconds=tdelta.microseconds)
-    #hours, minutes = tdelta.seconds // 3600, tdelta.seconds // 60 % 60
-    return tdelta
+    hours, minutes = tdelta.seconds // 3600, tdelta.seconds // 60 % 60
+    return hours + minutes/60
 
 
 # open before 8am (weekdays)
@@ -63,23 +65,30 @@ def basic_details(df):
     return k
 
 
-def feature_breakdown(cuisine, location, price_range_value):
-    businesses = []
-    with open('datasets/yelp_academic_dataset_business.json', 'r') as f:
-        for line in f:
-            businesses.append(json.loads(line))
-    df = json_normalize(businesses)
-    df.columns = df.columns.map(lambda x: x.split(".")[-1])
+def feature_breakdown(cuisine, location, price_range_value, file):
+    dataset = None
 
-    restaurants = df[df['categories'].str.contains("Restaurant") == True]
-    location_restaurants = restaurants[restaurants['city'] == location]
-    cuisine_data = location_restaurants[location_restaurants['categories'].str.contains(cuisine) == True]
+    if file: # read from file if file provided
+        data_frame = pd.read_csv(file)
+        dataset = data_frame.copy()
+    else:
+        businesses = []
+        with open('datasets/yelp_academic_dataset_business.json', 'r') as f:
+            for line in f:
+                businesses.append(json.loads(line))
+        df = json_normalize(businesses)
+        df.columns = df.columns.map(lambda x: x.split(".")[-1])
 
-    dataset = cuisine_data.copy()
+        restaurants = df[df['categories'].str.contains("Restaurant") == True]
+        location_restaurants = restaurants[restaurants['city'] == location]
+        cuisine_data = location_restaurants[location_restaurants['categories'].str.contains(cuisine) == True]
+
+        dataset = cuisine_data.copy()
+
     dataset = dataset.drop(columns=['is_open', 'BYOB', 'BYOBCorkage', 'AcceptsInsurance', 'AgesAllowed',
                                     'BusinessAcceptsBitcoin', 'ByAppointmentOnly', 'Corkage', 'DietaryRestrictions',
                                     'RestaurantsCounterService', 'Open24Hours', 'HairSpecializesIn', 'DriveThru',
-                                    'DogsAllowed', 'GoodForDancing', 'hours', 'attributes'])
+                                    'DogsAllowed', 'GoodForDancing']) #, 'hours', 'attributes'])
 
     # Ambience: romantic, intimate, classy, hipster, touristy, trendy, upscale, casual
     ambience = ['romantic', 'intimate', 'classy', 'hipster', 'touristy', 'trendy', 'upscale', 'casual']
@@ -102,9 +111,9 @@ def feature_breakdown(cuisine, location, price_range_value):
     dataset = dataset.drop(columns='BusinessParking')
 
     days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    dataset['TotalOpenTimeInWeek'] = timedelta(seconds=0)
+    dataset['TotalOpenTimeInWeek'] = 0
     for day in days_of_week:
-        dataset['TotalOpenTimeInWeek'] += dataset[day].apply(lambda x: x if pd.isnull(x) else total_time_in_hours(x))
+        dataset['TotalOpenTimeInWeek'] += dataset[day].apply(lambda x: 0 if pd.isnull(x) else total_time_in_hours(x))
 
     weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     dataset['NumberOfWeekdaysWithEarlyOpening'] = 0
@@ -123,6 +132,9 @@ def feature_breakdown(cuisine, location, price_range_value):
     dataset['OpenOnWeekends'] = 0
     for day in weekend:
         dataset['OpenOnWeekends'] += dataset[day].apply(lambda x: x if pd.isnull(x) else 1)
+
+    for day in days_of_week:
+        dataset[day] = dataset[day].apply(lambda x: 0 if pd.isnull(x) else total_time_in_hours(x))
 
     # break down best nights
     days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
@@ -173,15 +185,38 @@ def feature_breakdown(cuisine, location, price_range_value):
         dataset['attire_' + a] = dataset['RestaurantsAttire'].apply(lambda df: True if df == a else False)
     dataset = dataset.drop(columns='RestaurantsAttire')
 
-    location = location.replace(" ", "")
-    file_name = 'datasets/' + str(location) + '_' + str(cuisine)
-    if price_range_value:
-        pr = 'price_range_' + str(price_range_value)
-        dataset = dataset[dataset[pr] == True]
-        file_name += '_pr' + str(price_range_value)
+    # Assume 0 if missing
+    num_cols = ['positive_reviews', 'neutral_reviews', 'negative_reviews', 'OpenOnWeekends',
+                'NumberOfWeekdaysWithEarlyOpening', 'NumberOfWeekdaysWithLateClosing']
+    for col in num_cols:
+        dataset[col] = dataset[col].replace(np.NaN, 0.0)
+
+    # Assume false value if missing
+    cols = ['ambience_romantic', 'ambience_intimate', 'ambience_classy', 'ambience_hipster', 'ambience_touristy',
+            'ambience_trendy', 'ambience_upscale', 'ambience_casual', 'good_for_dessert', 'good_for_latenight',
+            'good_for_lunch', 'good_for_dinner', 'good_for_breakfast', 'good_for_brunch', 'parking_garage',
+            'parking_validated', 'parking_lot', 'parking_valet', 'bestnight_monday', 'bestnight_tuesday',
+            'bestnight_wednesday', 'bestnight_thursday', 'bestnight_friday', 'bestnight_saturday', 'bestnight_sunday',
+            'music_dj', 'music_background_music', 'music_no_music', 'music_karaoke', 'music_live', 'music_video',
+            'music_jukebox', 'parking_street']
+    for col in cols:
+        dataset[col] = dataset[col].replace(np.NaN, False)
+
+    file_name = ""
+    if file:
+        file_list = file.split(".")
+        file_name = file_list[0] + "_updated.csv"
+
+    else:
+        location = location.replace(" ", "")
+        file_name = 'datasets/' + str(location) + '_' + str(cuisine)
+        if price_range_value:
+            pr = 'price_range_' + str(price_range_value)
+            dataset = dataset[dataset[pr] == True]
+            file_name += '_pr' + str(price_range_value)
+        file_name += '_restaurants.csv'
 
     file_name = file_name.lower()
-    file_name += '_restaurants.csv'
     dataset.to_csv(file_name, mode='w', encoding='utf-8', index=False)
     print('dataset collected and written to: ' + file_name)
 
@@ -190,26 +225,29 @@ def main(argv):
     cuisine = ""
     location = ""
     price_range = ""
+    file = ""
     try:
-        opts, args = getopt.getopt(argv, "ic:l:p:", ["cuisine=", "location=", "price="])
+        opts, args = getopt.getopt(argv, "ic:l:f:p:", ["cuisine=", "location=", "file=", "price="])
     except getopt.GetoptError:
-        print('feature_engineering.py -c <cuisine> -l <location> -p <price_range_value>')
+        print('feature_engineering.py -c <cuisine> -l <location> -f <file> -p <price_range_value>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-i':
-            print("usage: feature_engineering.py -c <cuisine> -l <location> -p <price_range_value>")
+            print("usage: feature_engineering.py -c <cuisine> -l <location> -f <file> -p <price_range_value>")
             sys.exit()
         elif opt in ("-c", "--cuisine"):
             cuisine = arg
         elif opt in ("-l", "--location"):
             location = arg
+        elif opt in ("-f", "--file"):
+            file = arg
         elif opt in ("-p", "--price"):
             price_range = arg
 
-    if not cuisine or not location:
-        print('usage: cuisine and location parameters expected, use -i for more details')
+    if (not cuisine and not location) and not file:
+        print('usage: cuisine and location or file parameters expected, use -i for more details')
         sys.exit()
-    feature_breakdown(cuisine, location, price_range)
+    feature_breakdown(cuisine, location, price_range, file)
 
 
 if __name__ == "__main__":
