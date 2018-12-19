@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# create_topic_modelling_map
-# Create maps based on Topics Modelling results for dashboard.
-# Thirty-six maps can be created with this but must be done manually since
-# there's a lot of variation (some location, cuisine, price range combinations have 5 topics instead of 6).
+# create_topic_modelling_map.py
+# Create maps based on Topic Modelling results for dashboard.
+# Maps can be created by specifying location and cuisine. Four different maps will be created for each
+# cuisine and location combination (1 for each different price range). Each map will have a maximum of 600
+# restaurants to ensure faster loading times for dashboard. Final maps are saved in 'maps' folder as
+# <location>_<cuisine>_<price_range>.html
+# Run this to create maps: create_topic_modelling_map -c <cuisine> -l <location>
 
 import sys
 import getopt
@@ -13,46 +16,18 @@ import pandas as pd
 from folium import plugins
 import branca.colormap as cm
 
-
-COORDINATES = {'Las Vegas': (36.1699, -115.1398), 'Toronto': (43.6532, -79.3832), 'Calgary': (51.0486, -114.0708) }
-# calgary italian has 5
-# toronto italian has 5
-
-# read positive topics dataset based on id from negative dataset loop
-def get_pos_topic_scores(id):
-    positive = pos_df.loc[pos_df['business_id'] == id]
-    pos_scores=[0, 0, 0, 0, 0, 0]
-    if not positive.empty:
-        pos_scores = positive.iloc[0,9:15].tolist()
-    return pos_scores
-
-
-# create html text to format text in map pin popup
-def html_text(business_id, stars, neg_scores, name):
-    html_topics1 = ['', '', '', '', '', ''] #dynamic
-    html_topics2 = ['', '', '', '', '', ''] #dynamic
-
-    pos_scores = get_pos_topic_scores(business_id)
-    for m in range(0, len(pos_topics)):
-        html_topics1[m] = '{:18}: {:.2f}%'.format(pos_topics[m], pos_scores[m] * 100)
-    for n in range(0, len(neg_topics)):
-        html_topics2[n] = '{:18} {:.2f}%'.format(neg_topics[n], neg_scores[n] * 100)
-
-    pos_topics_text = 'Positive Topics<br>' + '<br>'.join(html_topics1)
-    neg_topics_text = 'Negative Topics<br>' + '<br>'.join(html_topics2)
-    stars_text = '<h3> Stars: ' + '{:.2f}'.format(stars) + '</h3>'
-    name_text = '<h3> Name: ' + name + '</h3>'
-    return name_text + stars_text + '<p>' + pos_topics_text + '<br><br>' + neg_topics_text + '</p>'
+COORDINATES = {'Las Vegas': (36.1699, -115.1398), 'Toronto': (43.6532, -79.3832), 'Calgary': (51.0486, -114.0708)}
 
 
 # create folium Iframe & Popup by creating html
-def get_popup(business_id, stars, neg_scores, name):
-    html = "" + html_text(business_id, stars, neg_scores, name) + ""
+def get_popup(text):
+    html = "" + text + ""
     iframe = folium.IFrame(html=html, width=300, height=200)
     return folium.Popup(iframe, max_width=1000)
 
 
 # set map pin color based on star rating
+# spectrum is red -> orange -> yellow -> green
 def star_color(stars):
     if stars <= 1.5:
         return '#FF0000'
@@ -82,26 +57,51 @@ def create_map(cuisine, location, price):
     pos_topics = list(pos_df)[9:15]
     neg_topics = list(neg_df)[9:15]
 
-    for row in neg_df.itertuples():
-        #   print(row)
-        probs = [row.Atmosphere, row._11, row._12, row._13, row._14, row._15] # dynamic
-        # positive.iloc[0,9:15].tolist()
+    for i, row in enumerate(neg_df.itertuples(), 0):
+        # negative topic probabilities
+        neg_scores = neg_df.iloc[i, 9:15].tolist()
 
         # get star rating from positive topic data set
-        positive = pos_df.loc[pos_df['business_id'] == id]
+        positive = pos_df.loc[pos_df['business_id'] == row.business_id]
         pos_star = row.stars
         if not positive.empty:
             pos_star = positive['stars'].values[0]
 
-        avg_stars = (row.stars + pos_star)/2 # get average star rating of negative and positive dataset
-        folium.Marker(location=[row.latitude, row.longitude], popup=get_popup(row.business_id, avg_stars, probs, row.name),
-                  icon=plugins.BeautifyIcon(border_color='transparent', background_color=star_color(avg_stars),
-                                icon='circle', icon_shape='marker', text_color='#FFF')).add_to(map)
+        # get average star rating of negative and positive dataset
+        avg_stars = (row.stars + pos_star)/2
 
-        # only map 600 businesses
+        # Create dynamically since some combinations have 5 topics instead of 6
+        pos_html_topics = [''] * len(pos_topics)
+        neg_html_topics = [''] * len(neg_topics)
+
+        # get positive topics scores from positive topics dataset based on id from negative dataset
+        positive = pos_df.loc[pos_df['business_id'] == row.business_id]
+        pos_scores = [0] * len(pos_topics)
+        if not positive.empty:
+            pos_scores = positive.iloc[0, 9:15].tolist()
+
+        # format html for popup
+        for m in range(0, len(pos_topics)):
+            pos_html_topics[m] = '{:18} {:.2f}%'.format(pos_topics[m].strip(), pos_scores[m] * 100)
+        for n in range(0, len(neg_topics)):
+            neg_html_topics[n] = '{:18} {:.2f}%'.format(neg_topics[n].strip(), neg_scores[n] * 100)
+
+        pos_topics_text = 'Positive Topics<br>' + '<br>'.join(pos_html_topics)
+        neg_topics_text = 'Negative Topics<br>' + '<br>'.join(neg_html_topics)
+        stars_text = '<h3> Stars: ' + '{:.2f}'.format(avg_stars) + '</h3>'
+        name_text = '<h3> Name: ' + row.name + '</h3>'
+        popup_text = name_text + stars_text + '<p>' + pos_topics_text + '<br><br>' + neg_topics_text + '</p>'
+
+        # set marker on map
+        folium.Marker(location=[row.latitude, row.longitude], popup=get_popup(popup_text),
+                      icon=plugins.BeautifyIcon(border_color='transparent', background_color=star_color(avg_stars),
+                                                icon='circle', icon_shape='marker', text_color='#FFF')).add_to(map)
+
+        # only map 600 businesses to ensure faster rendering of map on dashboard
         if row.Index > 600:
             break
 
+    # create color map, lower stars = red and higher stars = green
     colormap = cm.LinearColormap(
         ['red', 'orange', 'yellow', 'green'],
         vmin=0, vmax=5)
@@ -109,11 +109,12 @@ def create_map(cuisine, location, price):
     colormap.caption = 'Star Rating'
     map.add_child(colormap)
 
-    file_name= location.replace(" ", "").lower() + "_" + cuisine.lower() + "_" + str(price) + ".html"
+    # save map as html
+    file_name = location.replace(" ", "").lower() + "_" + cuisine.lower() + "_" + str(price) + ".html"
     map.save('maps/' + file_name)
 
 
-#  accept parameters
+# accept parameters
 def main(argv):
     cuisine = ""
     location = ""

@@ -6,6 +6,7 @@
 # Requires that both datasets are saved to csv files (use feature_engineering.py and sentiment_analysis.py)
 # Missing values for positive reviews, negative reviews, and neutral reviews columns are set to 0.
 # The final merged dataset is overwritten to restaurants file (argument provided)
+# Run this to merge: merge_sentiments.py -r <restaurants_file> -s <sentiments_file>
 
 import pandas as pd
 import numpy as np
