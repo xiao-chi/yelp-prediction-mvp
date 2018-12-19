@@ -1,5 +1,6 @@
 .DS_Store
 .ipynb_checkpoints
 .idea/
-datasets/american_reviews.csv
-yelp_academic_dataset_business.json
+datasets/lasvegas_american_pr2_reviews.csv
+datasets/yelp_academic_dataset_review.json
+datasets/yelp_academic_dataset_business.json
