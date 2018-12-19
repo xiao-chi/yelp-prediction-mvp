@@ -4,7 +4,8 @@
 # sentiment_analysis.py
 # This script reads all reviews from the passed reviews csv file and performs sentiment analysis.
 # Reviews are categorized into Positive, Neutral, or Negative categories.
-# The final dataset (with business ids) is saved as <original file name>_sentiments.csv
+# The pre-final dataset (with business ids and reviews) is saved as <original file name>_sentiments.csv
+# The final dataset (with business ids) is saved as <original file name>_sentiments_grouped.csv
 
 import sys
 import getopt
@@ -32,6 +33,7 @@ def sentiment_analysis(reviews_file):
 
     sia = SentimentIntensityAnalyzer()
     results = []
+	
     # Determine polarity
     for business_id, line, stars in zip(reviews_df['business_id'], reviews_df['text'], reviews_df['stars']):
         pol_score = sia.polarity_scores(line)
@@ -57,9 +59,11 @@ def sentiment_analysis(reviews_file):
     grouped = review_dataset.groupby(['business_id', 'label']).size().reset_index(name='size')
 
     file_list = reviews_file.split(".")
-    file_name = file_list[0] + "_sentiments.csv"
+	file_name1 = file_list[0] + "_sentiments.csv"
+    file_name2 = file_list[0] + "_sentiments_grouped.csv"
 
-    grouped.to_csv(file_name, mode='w', encoding='utf-8', index=False)
+	review_dataset.to_csv(file_name1, index=False)
+    grouped.to_csv(file_name2, index=False)
 
 
 # accept parameters
