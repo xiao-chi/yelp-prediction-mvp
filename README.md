@@ -11,4 +11,6 @@ Kacy Chou
 Xiao Chi Tu  
 Faizal Masrol  
 Bhagya Sharma  
-Apostolos Gnardellis    
+Apostolos Gnardellis  
+  
+Data cleaning & manipulation scripts are contigent on having yelp_academic_dataset_business.json and yelp_academic_dataset_review.json in datasets/ folder. 
