@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# feature_engineering.py
+# extract_features.py
 # This script breaks down business features from yelp business json file (nested json objects each become a
 # subsequent column). For example, the 6 parking categories are each moved to their own column.
 # This will filter out restaurants of cuisine specified in location specified and write this new dataset to
@@ -9,9 +9,9 @@
 # Script is contingent on having 'yelp_academic_dataset_business.json' in datasets folder.
 # Alternatively script can also be run if a csv file with business features is provided.
 # Either location & cuisine (optionally price range) or file name must be provided.
-# Run this by feature_engineering.py -c <cuisine> -l <location> -f <file_name> -p <price_range_value>"
-# Ex: feature_engineering.py -c American -l 'Las Vegas' -p 2
-# Ex: feature_engineering.py -f 'collective_restaurants.csv'
+# Run this by extract_features.py -c <cuisine> -l <location> -f <file_name> -p <price_range_value>"
+# Ex: extract_features.py -c American -l 'Las Vegas' -p 2
+# Ex: extract_features.py -f 'collective_restaurants.csv'
 
 import json
 import pandas as pd
@@ -83,7 +83,11 @@ def feature_breakdown(cuisine, location, price_range_value, file):
 
     dataset = None
     if file:  # read from file if file provided
-        data_frame = pd.read_csv(file)
+        try:  # ensure file exists
+            data_frame = pd.read_csv(file)
+        except FileNotFoundError:
+            print(file + " not found, please input valid file")
+            sys.exit()
         dataset = data_frame.copy()
     else:  # extract from yelp json dataset with specified parameters
         businesses = []
@@ -253,13 +257,13 @@ def main(argv):
     price_range = ""
     file = ""
     try:
-        opts, args = getopt.getopt(argv, "ic:l:f:p:", ["cuisine=", "location=", "file=", "price="])
+        opts, args = getopt.getopt(argv, "hc:l:f:p:", ["cuisine=", "location=", "file=", "price="])
     except getopt.GetoptError:
-        print('feature_engineering.py -c <cuisine> -l <location> -f <file> -p <price_range_value>')
+        print('extract_features.py -c <cuisine> -l <location> -f <file> -p <price_range_value>')
         sys.exit(2)
     for opt, arg in opts:
-        if opt == '-i':
-            print("usage: feature_engineering.py -c <cuisine> -l <location> -f <file> -p <price_range_value>")
+        if opt == '-h':
+            print("usage: extract_features.py -c <cuisine> -l <location> -f <file> -p <price_range_value>")
             sys.exit()
         elif opt in ("-c", "--cuisine"):
             cuisine = arg
@@ -272,7 +276,7 @@ def main(argv):
 
     # cuisine & location or file name are required
     if (not cuisine and not location) and not file:
-        print('usage: cuisine and location or file parameters expected, use -i for more details')
+        print('usage: cuisine and location or file parameters expected, use -h for more details')
         sys.exit()
 
     feature_breakdown(cuisine, location, price_range, file)

@@ -4,8 +4,11 @@
 # sentiment_analysis.py
 # This script reads all reviews from the passed reviews csv file and performs sentiment analysis.
 # Reviews are categorized into Positive, Neutral, or Negative categories.
-# The pre-final dataset (with business ids and reviews) is saved as <original file name>_sentiments.csv
-# The final dataset (with business ids) is saved as <original file name>_sentiments_grouped.csv
+# One dataset (with business ids and reviews) is saved as <original file name>_sentiments.csv (used for topic
+# modelling
+# The second dataset (with business ids) is saved as <original file name>_sentiments_grouped.csv (used to merge
+# with business features dataset)
+# Run this to perform sentiment analysis: sentiment_analysis.py -f <file_with_reviews>
 
 import sys
 import getopt
@@ -59,23 +62,24 @@ def sentiment_analysis(reviews_file):
     grouped = review_dataset.groupby(['business_id', 'label']).size().reset_index(name='size')
 
     file_list = reviews_file.split(".")
-	file_name1 = file_list[0] + "_sentiments.csv"
+    file_name1 = file_list[0] + "_sentiments.csv"
     file_name2 = file_list[0] + "_sentiments_grouped.csv"
 
-	review_dataset.to_csv(file_name1, index=False)
+    review_dataset.to_csv(file_name1, index=False)
     grouped.to_csv(file_name2, index=False)
+    print('Sentiment Analysis is completed, results stored in: ' + file_name1 + ' and ' + file_name2)
 
 
 # accept parameters
 def main(argv):
     file = ""
     try:
-        opts, args = getopt.getopt(argv, "if:", ["file="])
+        opts, args = getopt.getopt(argv, "hf:", ["file="])
     except getopt.GetoptError:
         print('sentiment_analysis.py -f <file>')
         sys.exit(2)
     for opt, arg in opts:
-        if opt == '-i':
+        if opt == '-h':
             print("usage: sentiment_analysis.py -f <file>")
             sys.exit()
         elif opt in ("-f", "--file"):
@@ -83,7 +87,7 @@ def main(argv):
 
     # file name is required
     if not file:
-        print('usage: file name expected, use -i for more details')
+        print('usage: file name expected, use -h for more details')
         sys.exit()
 
     sentiment_analysis(file)
