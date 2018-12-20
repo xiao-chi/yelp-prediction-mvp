@@ -119,12 +119,12 @@ def main(argv):
     cuisine = ""
     location = ""
     try:
-        opts, args = getopt.getopt(argv, "ic:l:", ["cuisine=", "location="])
+        opts, args = getopt.getopt(argv, "hc:l:", ["cuisine=", "location="])
     except getopt.GetoptError:
         print('create_topic_modelling_maps.py -c <cuisine> -l <location>')
         sys.exit(2)
     for opt, arg in opts:
-        if opt == '-i':
+        if opt == '-h':
             print("create_topic_modelling_maps.py -c <cuisine> -l <location>")
             sys.exit()
         elif opt in ("-c", "--cuisine"):
@@ -134,7 +134,7 @@ def main(argv):
 
     # cuisine and location parameters are required
     if not cuisine and not location:
-        print('usage: cuisine and location are expected, use -i for more details')
+        print('usage: cuisine and location are expected, use -h for more details')
         sys.exit()
 
     price_ranges = [1, 2, 3, 4]

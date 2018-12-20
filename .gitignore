@@ -2,5 +2,8 @@
 .ipynb_checkpoints
 .idea/
 datasets/lasvegas_american_pr2_reviews.csv
+datasets/odyssey_reviews.csv
+datasets/odyssey_reviews_sentiments.csv
+datasets/odyssey_reviews_sentiments_grouped.csv
 datasets/yelp_academic_dataset_review.json
 datasets/yelp_academic_dataset_business.json
