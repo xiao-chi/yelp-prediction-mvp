@@ -60,12 +60,12 @@ def main(argv):
     restaurants_file = ""
     sentiments_file = ""
     try:
-        opts, args = getopt.getopt(argv, "ir:s:", ["restaurants=", "sentiments="])
+        opts, args = getopt.getopt(argv, "hr:s:", ["restaurants=", "sentiments="])
     except getopt.GetoptError:
         print('merge_features_and_sentiments.py -r <restaurants csv file> -s <sentiments csv file>')
         sys.exit(2)
     for opt, arg in opts:
-        if opt == '-i':
+        if opt == '-h':
             print("usage: merge_features_and_sentiments.py -r <restaurants csv file> -s <sentiments csv file>")
             sys.exit()
         elif opt in ("-r", "--restaurants"):
@@ -75,7 +75,7 @@ def main(argv):
 
     # restaurants file and sentiments file names are required
     if not restaurants_file and not sentiments_file:
-        print('usage: restaurants file name and sentiments file name are expected, use -i for more details')
+        print('usage: restaurants file name and sentiments file name are expected, use -h for more details')
         sys.exit()
 
     merge_data(restaurants_file, sentiments_file)
