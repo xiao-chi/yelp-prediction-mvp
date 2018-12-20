@@ -73,6 +73,15 @@ features_df = pd.concat([features_df, pd.get_dummies(features_df['cat'], prefix=
 features_df = pd.merge(features_df, sentiment_df, how='left', on='business_id')
 features_df = pd.merge(features_df, reviews_df, on='business_id', how='left')
 
+# Remove unneeded columns
+col_remove = ['address', 'categories', 'city', 'cuisine', 'latitude', 'longitude',
+              'name', 'state', 'cat', 'price_range_1', 'price_range_2', 'price_range_3',
+              'price_range_4', 'postal_code']
+yelp_df = features_df.drop(col_remove, axis=1)
+
+# Set business_id as Index
+yelp_df.set_index('business_id', inplace=True)
+
 # Save Updated Business Features Dataset
-features_df.to_csv('datasets/' + args.output_file, index=False)
+yelp_df.to_csv('datasets/' + args.output_file, index=False)
 print('Final dataset saved to  datasets/' + args.output_file)
