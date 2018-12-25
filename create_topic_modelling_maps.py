@@ -43,7 +43,7 @@ def star_color(stars):
 
 def create_map(cuisine, location, price):
     # create map with coordinates of location specified
-    map = folium.Map(location=COORDINATES.get(location), zoom_start=11)
+    tm_map = folium.Map(location=COORDINATES.get(location), zoom_start=11)
 
     pos_df = pd.read_csv('datasets/topic_modelling/pos_bsns_' + location.replace(" ", "").lower()
                          + "_" + cuisine.lower() + '.csv')
@@ -95,7 +95,7 @@ def create_map(cuisine, location, price):
         # set marker on map
         folium.Marker(location=[row.latitude, row.longitude], popup=get_popup(popup_text),
                       icon=plugins.BeautifyIcon(border_color='transparent', background_color=star_color(avg_stars),
-                                                icon='circle', icon_shape='marker', text_color='#FFF')).add_to(map)
+                                                icon='circle', icon_shape='marker', text_color='#FFF')).add_to(tm_map)
 
         # only map 600 businesses to ensure faster rendering of map on dashboard
         if row.Index > 600:
@@ -107,11 +107,11 @@ def create_map(cuisine, location, price):
         vmin=0, vmax=5)
 
     colormap.caption = 'Star Rating'
-    map.add_child(colormap)
+    tm_map.add_child(colormap)
 
     # save map as html
     file_name = location.replace(" ", "").lower() + "_" + cuisine.lower() + "_" + str(price) + ".html"
-    map.save('maps/' + file_name)
+    tm_map.save('maps/' + file_name)
 
 
 # accept parameters
