@@ -1,0 +1,121 @@
+BikeParking,0.017592423121856608
+BusinessAcceptsCreditCards,0.012625125125188472
+Caters,0.01340125648483885
+CoatCheck,0.00361134826499321
+GoodForKids,0.012827566838445804
+HappyHour,0.002561952215369916
+HasTV,0.009377500553191732
+OutdoorSeating,0.006157605280235814
+RestaurantsDelivery,0.009918646360553049
+RestaurantsGoodForGroups,0.011948499464004161
+RestaurantsReservations,0.014433947657488778
+RestaurantsTableService,0.012948569402536305
+RestaurantsTakeOut,0.010397543201221902
+WheelchairAccessible,0.009191606572678385
+Friday,0.012073344369460965
+Monday,0.008470518346863555
+Saturday,0.03023894036442923
+Sunday,0.02022116449503286
+Thursday,0.018880121323685387
+Tuesday,0.008823091985371302
+Wednesday,0.01124869914745777
+review_count,0.04292663671592321
+cat_Calgary_american_1.0,0.0
+cat_Calgary_american_2.0,0.005201199466035228
+cat_Calgary_american_3.0,0.0027363966232905297
+cat_Calgary_american_4.0,0.0
+cat_Calgary_american_nan,0.0
+cat_Calgary_chinese_1.0,0.0
+cat_Calgary_chinese_2.0,0.0014436444300085108
+cat_Calgary_chinese_3.0,0.0
+cat_Calgary_chinese_nan,0.0003166207211578667
+cat_Calgary_italian_1.0,0.0
+cat_Calgary_italian_2.0,0.0016785164370872999
+cat_Calgary_italian_3.0,0.001638755278630856
+cat_Calgary_italian_4.0,0.0
+cat_Calgary_italian_nan,0.0
+cat_Las Vegas_american_1.0,0.007078936402586826
+cat_Las Vegas_american_2.0,0.004115744933720182
+cat_Las Vegas_american_3.0,0.0009412243235495102
+cat_Las Vegas_american_4.0,0.0025403361485285825
+cat_Las Vegas_american_nan,0.0028798210649792853
+cat_Las Vegas_chinese_1.0,0.00041038216104069357
+cat_Las Vegas_chinese_2.0,0.0021536090115547384
+cat_Las Vegas_chinese_3.0,0.0
+cat_Las Vegas_chinese_4.0,0.0
+cat_Las Vegas_chinese_nan,0.0008893264805310719
+cat_Las Vegas_italian_1.0,0.0017765228599788954
+cat_Las Vegas_italian_2.0,0.006843747526373345
+cat_Las Vegas_italian_3.0,0.0
+cat_Las Vegas_italian_4.0,0.0
+cat_Las Vegas_italian_nan,0.0
+cat_Toronto_american_1.0,0.006551811270304913
+cat_Toronto_american_2.0,0.008682693174139772
+cat_Toronto_american_3.0,0.0051443983865404296
+cat_Toronto_american_4.0,0.0
+cat_Toronto_american_nan,0.009051443285992548
+cat_Toronto_chinese_1.0,0.006078522196823477
+cat_Toronto_chinese_2.0,0.008464171007837995
+cat_Toronto_chinese_3.0,0.003095922687751571
+cat_Toronto_chinese_4.0,0.0
+cat_Toronto_chinese_nan,0.009879054170070815
+cat_Toronto_italian_1.0,0.006176320465800887
+cat_Toronto_italian_2.0,0.00841548149706306
+cat_Toronto_italian_3.0,0.0036006895763767317
+cat_Toronto_italian_4.0,0.0
+cat_Toronto_italian_nan,0.0003821194304139862
+negative_reviews,0.17028896340361174
+neutral_reviews,0.04743010430547142
+positive_reviews,0.1878772685373773
+ambience_romantic,0.001871251461383329
+ambience_intimate,0.001988371748250621
+ambience_classy,0.0024072086674265395
+ambience_hipster,0.0003150544296928943
+ambience_touristy,0.0
+ambience_trendy,0.0035013860072391186
+ambience_upscale,0.0009601065345237103
+ambience_casual,0.004540781420844678
+good_for_dessert,0.001531936410101165
+good_for_latenight,0.0019162913187267976
+good_for_lunch,0.002743012701496686
+good_for_dinner,0.007161903349449838
+good_for_breakfast,0.0021608726893874728
+good_for_brunch,0.0014608705184071527
+parking_garage,0.003414984129589702
+parking_street,0.0037828272562568906
+parking_validated,0.0
+parking_lot,0.00416513011539518
+parking_valet,0.0017988004422101434
+TotalOpenTimeInWeek,0.049780552956076134
+NumberOfWeekdaysWithEarlyOpening,0.0025132346731764317
+NumberOfWeekdaysWithLateClosing,0.0010429161094621072
+OpenOnWeekends,0.00570679351922581
+bestnight_monday,0.0
+bestnight_tuesday,0.0
+bestnight_wednesday,0.0
+bestnight_thursday,0.0
+bestnight_friday,0.0005711895164713415
+bestnight_saturday,0.0
+bestnight_sunday,0.0007952618577033765
+music_dj,0.004943650867821746
+music_background_music,0.0009442237746896156
+music_no_music,0.0
+music_karaoke,0.0
+music_live,0.0
+music_video,0.0
+music_jukebox,0.0
+full_bar,0.014991497397499715
+beer_and_wine,0.006488834156929801
+no_alcohol,0.0
+smoking_outdoor,0.0
+smoking_no,0.0008858537165376693
+smoking_yes,0.0007962962362997747
+wifi_free,0.006697973371555561
+wifi_no,0.0032314786872243077
+wifi_paid,0.0006320323696794003
+noise_average,0.007843561067801917
+noise_loud,0.0036649348413675597
+noise_quiet,0.00407847333265427
+noise_very_loud,0.0019911415086199253
+attire_casual,0.010220222690262881
+attire_dressy,0.0028192335931015826
