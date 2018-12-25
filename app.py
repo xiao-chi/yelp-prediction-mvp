@@ -33,22 +33,6 @@ index_page = html.Div([
 
 available_cities = ['Las Vegas', 'Calgary', 'Toronto']
 
-pos_topics_df = pd.read_csv('datasets/pos_reviews.csv')
-neg_topics_df = pd.read_csv('datasets/neg_reviews.csv')
-
-pos_topics = ['menu/experience', 'burger/fries', 'service/atmosphere', 'breakfast/pancakes', 'food',
-              'location']
-pos_topics_avg = []
-for y in range(0, 6):
-    avg = pos_topics_df[str(y)].mean()
-    pos_topics_avg.append(avg * 100)
-
-neg_topics = ['wait/table', 'burger/fries', 'bad service', 'chicken/salad', 'breakfast/eggs', 'buffet/price']
-neg_topics_avg = []
-for y in range(0, 6):
-    avg = neg_topics_df[str(y)].mean()
-    neg_topics_avg.append(avg * 100)
-
 price_ranges = [1, 2, 3, 4]
 cuisines = ['Italian', 'American', 'Chinese']
 
@@ -323,10 +307,10 @@ def calculate_total_reviews(pos_count, neu_count, neg_count):
 
 
 # MODELS
-data = pd.read_csv('datasets/vegas_sme_dataset.csv')
+data = pd.read_csv('datasets/lasvegas_american_pr2_restaurants.csv')
 y = data["stars"]
 x = data[['ambience_classy', 'ambience_trendy', 'good_for_dinner', 'review_count', 'good_for_brunch', 'parking_garage',
-          'parking_street', 'parking_lot', 'none', 'full_bar', 'bestnight_friday', 'wifi_free',
+          'parking_street', 'parking_lot', 'no_alcohol', 'full_bar', 'bestnight_friday', 'wifi_free',
           'noise_quiet', 'negative_reviews']]
 x = sm.add_constant(x)
 vegas_american_2_model = sm.OLS(y.astype(float), x.astype(float)).fit()
