@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>yelp_prediction_model-noknn</title>
+<title>yelp_prediction_model</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -14406,14 +14406,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">## Final Predict Function. x is the input variable i.e. the table that contains all the predictors in pandas.core.frame.DataFrame.</span>
-<span class="c1"># ids is the dataframe of dummy_id provided at each parse of prediction. sample ::: - </span>
-<span class="c1"># business_id</span>
-<span class="c1"># ymuI9CgRiCYYB_F4wGxQ3A    3.267606</span>
-<span class="c1"># piJeE_GQxpYE3hvqW__jvA    3.976285</span>
-<span class="c1"># 66jwLkSd6M0cZulZrA3zcw    2.608392</span>
-<span class="c1"># pVntIctjRuspaO_ULf5zOA    2.594937</span>
-<span class="c1"># FqJ1SWEBhgVl66FrcsovOQ    2.800000</span>
-<span class="c1"># Name: stars, dtype: float64</span>
+<span class="c1"># ids is the dataframe of dummy_id provided at each parse of prediction.</span>
 
 <span class="k">def</span> <span class="nf">avg_predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
 
@@ -14449,8 +14442,7 @@ div#notebook {
     <span class="n">all_pred</span><span class="p">[</span><span class="s1">&#39;gbm_pred&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_pred</span><span class="p">[</span><span class="s1">&#39;gbm_pred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
     <span class="n">all_pred</span><span class="p">[</span><span class="s1">&#39;svr_pred&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_pred</span><span class="p">[</span><span class="s1">&#39;svr_pred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
     <span class="n">all_pred</span><span class="p">[</span><span class="s1">&#39;rf_pred&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_pred</span><span class="p">[</span><span class="s1">&#39;rf_pred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="c1">#     all_pred.drop_duplicates(inplace=True)</span>
-    
+
     <span class="n">all_pred</span><span class="p">[</span><span class="s1">&#39;pred&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_pred</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;lasso_pred&#39;</span><span class="p">]</span> <span class="o">+</span> 
                                       <span class="mf">0.2</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;ridge_pred&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.15</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;gbm_pred&#39;</span><span class="p">]</span> <span class="o">+</span> 
                                       <span class="mf">0.4</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;svr_pred&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.05</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;rf_pred&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -14842,7 +14834,7 @@ Wall time: 19min 57s
 <span class="c1">## compared to the non-linear estimators. Similarly, as we classify the predictions and </span>
 <span class="c1">## actual labels into star-rating groups between 1 to 5, accuracy of the prediction produces the same. </span>
 <span class="c1">## SVR estimator shows the most stable and a relatively good performance.</span>
-<span class="c1">## There could be slight overfitting seen on the tree based estimators &amp; KNN, although </span>
+<span class="c1">## There could be slight overfitting seen on the tree based estimators, although </span>
 <span class="c1">## they generally have higher R-Squared and accuracy. The other models shows stability </span>
 <span class="c1">## albeit lower R-Squared and accuracy.</span>
 
@@ -14927,9 +14919,6 @@ gbm_cv2, gbm_best2, gbm_params2, gbm_cvResults2 = model_CVGridSearch(
 print(&quot;------------------------------------------------------------------------------------------------------------&quot;)
 svr_cv2, svr_best2, svr_params2, svr_cvResults2 = model_CVGridSearch(
     SVR, svr_param, svr_jobs, svr_rs)
-# print(&quot;------------------------------------------------------------------------------------------------------------&quot;)
-# knn_cv2, knn_best2, knn_params2, knn_cvResults2 = model_CVGridSearch(
-#     neighbors.KNeighborsRegressor, knn_param, knn_jobs, knn_rs)
 print(&quot;------------------------------------------------------------------------------------------------------------&quot;)
 rf_cv2, rf_best2, rf_params2, rf_cvResults2 = model_CVGridSearch(
     RandomForestRegressor, rf_param, rf_jobs, rf_rs)
