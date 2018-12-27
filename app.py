@@ -1,9 +1,9 @@
 import flask
 import dash
-import pandas as pd
+import numpy as np
 import dash_html_components as html
 import dash_core_components as dcc
-import statsmodels.api as sm
+from yelp_predict import predict
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -306,41 +306,6 @@ def calculate_total_reviews(pos_count, neu_count, neg_count):
     return int(pos_count) + int(neu_count) + int(neg_count)
 
 
-# MODELS
-data = pd.read_csv('datasets/lasvegas_american_pr2_restaurants.csv')
-y = data["stars"]
-x = data[['ambience_classy', 'ambience_trendy', 'good_for_dinner', 'review_count', 'good_for_brunch', 'parking_garage',
-          'parking_street', 'parking_lot', 'no_alcohol', 'full_bar', 'bestnight_friday', 'wifi_free',
-          'noise_quiet', 'negative_reviews']]
-x = sm.add_constant(x)
-vegas_american_2_model = sm.OLS(y.astype(float), x.astype(float)).fit()
-
-# LV Italian PR2
-data1 = pd.read_csv('datasets/lasvegas_italian_pr2_restaurants.csv')
-y1 = data1["stars"]
-x1 = data1[['ambience_classy', 'ambience_trendy', 'good_for_dinner', 'review_count', 'good_for_brunch',
-            'parking_garage', 'parking_street', 'parking_lot', 'no_alcohol', 'full_bar', 'bestnight_friday',
-            'wifi_free', 'noise_quiet', 'negative_reviews']]
-x1 = sm.add_constant(x1)
-vegas_italian_2_model = sm.OLS(y1.astype(float), x1.astype(float)).fit()
-
-# Toronto Italian PR2
-data2 = pd.read_csv('datasets/toronto_italian_pr2_restaurants.csv')
-y2 = data2["stars"]
-x2 = data2[['ambience_romantic', 'ambience_hipster', 'ambience_casual', 'good_for_dinner', 'review_count',
-            'bestnight_monday', 'full_bar', 'music_dj', 'noise_loud', 'positive_reviews']]
-x2 = sm.add_constant(x2)
-toronto_italian_2_model = sm.OLS(y2.astype(float), x2.astype(float)).fit()
-
-# Toronto Italian PR3
-data3 = pd.read_csv('datasets/toronto_italian_pr3_restaurants.csv')
-y3 = data3["stars"]
-x3 = data3[['ambience_intimate', 'good_for_latenight', 'review_count', 'bestnight_monday', 'full_bar',
-            'music_live', 'wifi_free', 'wifi_no', 'noise_very_loud', 'noise_average', 'negative_reviews']]
-x3 = sm.add_constant(x3)
-toronto_italian_3_model = sm.OLS(y3.astype(float), x3.astype(float)).fit()
-
-
 @app.callback(dash.dependencies.Output('rating_prediction', 'children'),
               [dash.dependencies.Input('submit_button', 'n_clicks')],
               [dash.dependencies.State('cities_dropdown_2', 'value'),
@@ -355,75 +320,114 @@ toronto_italian_3_model = sm.OLS(y3.astype(float), x3.astype(float)).fit()
                dash.dependencies.State('best_night_checkbox', 'values'),
                dash.dependencies.State('parking_checkbox', 'values'),
                dash.dependencies.State('pos_reviews_keypress', 'value'),
+               dash.dependencies.State('neu_reviews_keypress', 'value'),
                dash.dependencies.State('neg_reviews_keypress', 'value'),
                dash.dependencies.State('review_count_keypress', 'value')
                ])
 def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, musics, ambiences, good_fors, best_nights,
-               parkings, pos_reviews, neg_reviews, review_count):
+               parkings, pos_reviews, neu_reviews, neg_reviews, review_count):
     pos_reviews = int(pos_reviews)
+    neu_reviews = int(neu_reviews)
     neg_reviews = int(neg_reviews)
     review_count = int(review_count)
-    constant = 1.0
 
-    no_wifi = True if wifi is 0 else False
-    free_wifi = True if wifi is 1 else False
+    no_wifi = 1 if wifi is 0 else 0
+    free_wifi = 1 if wifi is 1 else 0
+    paid_wifi = 1 if wifi is 2 else 0
 
-    no_alcohol = True if alcohol is 0 else False
-    full_bar = True if alcohol is 2 else False
+    no_alcohol = 1 if alcohol is 0 else 0
+    beer_and_wine = 1 if alcohol is 1 else 0
+    full_bar = 1 if alcohol is 2 else 0
 
-    quiet = True if noise_level is 0 else False
-    average = True if noise_level is 1 else False
-    loud = True if noise_level is 2 else False
-    very_loud = True if noise_level is 3 else False
+    noise_quiet = 1 if noise_level is 0 else 0
+    noise_average = 1 if noise_level is 1 else 0
+    noise_loud = 1 if noise_level is 2 else 0
+    noise_very_loud = 1 if noise_level is 3 else 0
 
-    trendy = True if 'trendy' in ambiences else False
-    classy = True if 'classy' in ambiences else False
-    romantic = True if 'romantic' in ambiences else False
-    intimate = True if 'intimate' in ambiences else False
-    hipster = True if 'hipster' in ambiences else False
-    casual = True if 'casual' in ambiences else False
+    trendy = 1 if 'trendy' in ambiences else 0
+    classy = 1 if 'classy' in ambiences else 0
+    romantic = 1 if 'romantic' in ambiences else 0
+    intimate = 1 if 'intimate' in ambiences else 0
+    hipster = 1 if 'hipster' in ambiences else 0
+    casual = 1 if 'casual' in ambiences else 0
 
-    good_for_dinner = True if 'dinner' in good_fors else False
-    good_for_brunch = True if 'brunch' in good_fors else False
-    good_for_late_night = True if 'late_night' in good_fors else False
+    good_for_dinner = 1 if 'dinner' in good_fors else 0
+    good_for_brunch = 1 if 'brunch' in good_fors else 0
+    good_for_breakfast = 1 if 'breakfast' in good_fors else 0
+    good_for_lunch = 1 if 'lunch' in good_fors else 0
+    good_for_dessert = 1 if 'dessert' in good_fors else 0
+    good_for_late_night = 1 if 'late_night' in good_fors else 0
 
-    best_night_monday = True if 'Monday' in best_nights else False
-    best_night_friday = True if 'Friday' in best_nights else False
+    best_night_monday = 1 if 'Monday' in best_nights else 0
+    best_night_tuesday = 1 if 'Tuesday' in best_nights else 0
+    best_night_wednesday = 1 if 'Wednesday' in best_nights else 0
+    best_night_thursday = 1 if 'Thursday' in best_nights else 0
+    best_night_friday = 1 if 'Friday' in best_nights else 0
+    best_night_saturday = 1 if 'Saturday' in best_nights else 0
+    best_night_sunday = 1 if 'Sunday' in best_nights else 0
 
-    parking_garage = True if 'garage' in parkings else False
-    parking_lot = True if 'lot' in parkings else False
-    parking_street = True if 'street' in parkings else False
+    parking_garage = 1 if 'garage' in parkings else 0
+    parking_lot = 1 if 'lot' in parkings else 0
+    parking_street = 1 if 'street' in parkings else 0
+    parking_valet = 1 if 'valet' in parkings else 0
+    parking_validated = 1 if 'validated' in parkings else 0
 
-    music_dj = True if 'dj' in musics else False
-    music_live = True if 'live' in musics else False
+    no_music = 1 if 'none' in musics else 0
+    music_dj = 1 if 'dj' in musics else 0
+    music_live = 1 if 'live' in musics else 0
+    music_background = 1 if 'background' in musics else 0
+    music_karaoke = 1 if 'karaoke' in musics else 0
 
-    inputs = [[]]
-    model = None
+    cat_dict = {'cat_Calgary_american_1.0': 0, 'cat_Calgary_american_2.0': 0, 'cat_Calgary_american_3.0': 0,
+                'cat_Calgary_american_4.0': 0, 'cat_Calgary_american_nan': 0, 'cat_Calgary_chinese_1.0': 0,
+                'cat_Calgary_chinese_2.0': 0, 'cat_Calgary_chinese_3.0': 0, 'cat_Calgary_chinese_nan': 0,
+                'cat_Calgary_italian_1.0': 0, 'cat_Calgary_italian_2.0': 0, 'cat_Calgary_italian_3.0': 0,
+                'cat_Calgary_italian_4.0': 0, 'cat_Calgary_italian_nan': 0, 'cat_Las Vegas_american_1.0': 0,
+                'cat_Las Vegas_american_2.0': 0, 'cat_Las Vegas_american_3.0': 0, 'cat_Las Vegas_american_4.0': 0,
+                'cat_Las Vegas_american_nan': 0, 'cat_Las Vegas_chinese_1.0': 0, 'cat_Las Vegas_chinese_2.0': 0,
+                'cat_Las Vegas_chinese_3.0': 0, 'cat_Las Vegas_chinese_4.0': 0, 'cat_Las Vegas_chinese_nan': 0,
+                'cat_Las Vegas_italian_1.0': 0, 'cat_Las Vegas_italian_2.0': 0, 'cat_Las Vegas_italian_3.0': 0,
+                'cat_Las Vegas_italian_4.0': 0, 'cat_Las Vegas_italian_nan': 0, 'cat_Toronto_american_1.0': 0,
+                'cat_Toronto_american_2.0': 0, 'cat_Toronto_american_3.0': 0, 'cat_Toronto_american_4.0': 0,
+                'cat_Toronto_american_nan': 0, 'cat_Toronto_chinese_1.0': 0, 'cat_Toronto_chinese_2.0': 0,
+                'cat_Toronto_chinese_3.0': 0, 'cat_Toronto_chinese_4.0': 0, 'cat_Toronto_chinese_nan': 0,
+                'cat_Toronto_italian_1.0': 0, 'cat_Toronto_italian_2.0': 0, 'cat_Toronto_italian_3.0': 0,
+                'cat_Toronto_italian_4.0': 0, 'cat_Toronto_italian_nan': 0}
 
-    if city == 'Las Vegas' and cuisine == 'Italian' and price is 2:
-        inputs = [[constant, classy, trendy, good_for_dinner, review_count, good_for_brunch, parking_garage,
-                   parking_street, parking_lot, no_alcohol, full_bar, best_night_friday, free_wifi,
-                   quiet, neg_reviews]]
-        model = vegas_italian_2_model
-    elif city == 'Toronto' and cuisine == 'Italian' and price is 2:
-        inputs = [[constant, romantic, hipster, casual, good_for_dinner, review_count, best_night_monday,
-                   full_bar, music_dj, loud, pos_reviews]]
-        model = toronto_italian_2_model
-    elif city == 'Toronto' and cuisine == 'Italian' and price is 3:
-        inputs = [[constant, intimate, good_for_late_night, review_count, best_night_monday, full_bar,
-                   music_live, free_wifi, no_wifi, very_loud, average, neg_reviews]]
-        model = toronto_italian_3_model
-    elif city == 'Las Vegas' and cuisine == 'American' and price is 2:
-        # LV American 2
-        inputs = [[constant, classy, trendy, good_for_dinner, review_count, good_for_brunch, parking_garage,
-                   parking_street, parking_lot, no_alcohol, full_bar, best_night_friday, free_wifi,
-                   quiet, neg_reviews]]
-        model = vegas_american_2_model
-
-    star_prediction = [1.0]
-    if model is not None:
-        star_prediction = model.predict(inputs)
-    stars = 5.0 if star_prediction[0] > 5 else star_prediction[0]
+    y = ['BikeParking', 'BusinessAcceptsCreditCards', 'Caters', 'CoatCheck', 'GoodForKids', 'HappyHour', 'HasTV',
+         'OutdoorSeating', 'RestaurantsDelivery', 'RestaurantsGoodForGroups', 'RestaurantsReservations',
+         'RestaurantsTableService', 'RestaurantsTakeOut', 'WheelchairAccessible', 'Friday', 'Monday', 'Saturday',
+         'Sunday', 'Thursday', 'Tuesday', 'Wednesday', review_count, 'cat_Calgary_american_1.0',
+         'cat_Calgary_american_2.0',
+         'cat_Calgary_american_3.0', 'cat_Calgary_american_4.0', 'cat_Calgary_american_nan',
+         'cat_Calgary_chinese_1.0', 'cat_Calgary_chinese_2.0', 'cat_Calgary_chinese_3.0', 'cat_Calgary_chinese_nan',
+         'cat_Calgary_italian_1.0', 'cat_Calgary_italian_2.0', 'cat_Calgary_italian_3.0', 'cat_Calgary_italian_4.0',
+         'cat_Calgary_italian_nan', 'cat_Las Vegas_american_1.0', 'cat_Las Vegas_american_2.0',
+         'cat_Las Vegas_american_3.0',
+         'cat_Las Vegas_american_4.0', 'cat_Las Vegas_american_nan', 'cat_Las Vegas_chinese_1.0',
+         'cat_Las Vegas_chinese_2.0',
+         'cat_Las Vegas_chinese_3.0', 'cat_Las Vegas_chinese_4.0', 'cat_Las Vegas_chinese_nan',
+         'cat_Las Vegas_italian_1.0',
+         'cat_Las Vegas_italian_2.0', 'cat_Las Vegas_italian_3.0', 'cat_Las Vegas_italian_4.0',
+         'cat_Las Vegas_italian_nan',
+         'cat_Toronto_american_1.0', 'cat_Toronto_american_2.0', 'cat_Toronto_american_3.0', 'cat_Toronto_american_4.0',
+         'cat_Toronto_american_nan', 'cat_Toronto_chinese_1.0', 'cat_Toronto_chinese_2.0', 'cat_Toronto_chinese_3.0',
+         'cat_Toronto_chinese_4.0', 'cat_Toronto_chinese_nan', 'cat_Toronto_italian_1.0', 'cat_Toronto_italian_2.0',
+         'cat_Toronto_italian_3.0', 'cat_Toronto_italian_4.0', 'cat_Toronto_italian_nan', neg_reviews,
+         neu_reviews, pos_reviews, romantic, intimate, classy,
+         hipster, 'ambience_touristy', trendy, 'ambience_upscale', casual,
+         good_for_dessert, good_for_late_night, good_for_lunch, good_for_dinner, good_for_breakfast,
+         good_for_brunch, parking_garage, parking_street, parking_validated, parking_lot, parking_valet,
+         'TotalOpenTimeInWeek', 'NumberOfWeekdaysWithEarlyOpening', 'NumberOfWeekdaysWithLateClosing', 'OpenOnWeekends',
+         best_night_monday, best_night_tuesday, best_night_wednesday, best_night_thursday, best_night_friday,
+         best_night_saturday, best_night_sunday, music_dj, music_background, no_music, music_karaoke,
+         music_live, 'music_video', 'music_jukebox', full_bar, beer_and_wine, no_alcohol, 'smoking_outdoor',
+         'smoking_no', 'smoking_yes', free_wifi, no_wifi, paid_wifi, noise_average, noise_loud, noise_quiet,
+         noise_very_loud, 0, 0]
+    inputs = np.array([])
+    inputs = inputs.reshape(1, -1)
+    star_prediction = predict(inputs)
+    stars = 5.0 if star_prediction > 5 else star_prediction
     stars = 1.0 if stars < 1 else stars
     return '{:.2f}'.format(stars)
 
