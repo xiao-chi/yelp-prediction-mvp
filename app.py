@@ -256,7 +256,7 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             dcc.Checklist(
                 id='music_checkbox',
                 options=[
-                    {'label': 'None', 'value': 'none'},
+                    {'label': 'None', 'value': 'no_music'},
                     {'label': 'Background', 'value': 'background'},
                     {'label': 'Live', 'value': 'live'},
                     {'label': 'DJ', 'value': 'dj'},
@@ -385,6 +385,23 @@ def set_price_range_options(city, cuisine):
         return [{'label': i, 'value': i} for i in all_price_ranges]
 
 
+# exclude price range 4 for calgary + chinese
+@app.callback(dash.dependencies.Output('music_checkbox', 'options'),
+              [dash.dependencies.Input('music_checkbox', 'values')])
+def set_music_options(value):
+    no_music = [{'label': 'None', 'value': 'no_music'}]
+    music_options = [{'label': 'None', 'value': 'no_music'},
+                    {'label': 'Background', 'value': 'background'},
+                    {'label': 'Live', 'value': 'live'},
+                    {'label': 'DJ', 'value': 'dj'},
+                    {'label': 'Karaoke', 'value': 'karaoke'},
+                    {'label': 'Jukebox', 'value': 'jukebox'},
+                    {'label': 'Video', 'value': 'video'}]
+    if 'no_music' in value:
+        return no_music
+    else:
+        return music_options
+
 @app.callback(dash.dependencies.Output('review_count_keypress', 'value'),
               [dash.dependencies.Input('pos_reviews_keypress', 'value'),
                dash.dependencies.Input('neu_reviews_keypress', 'value'),
@@ -491,7 +508,7 @@ def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, smoki
     parking_valet = 1 if 'valet' in parkings else 0
     parking_validated = 1 if 'validated' in parkings else 0
 
-    no_music = 1 if 'none' in musics else 0
+    no_music = 1 if 'no_music' in musics else 0
     music_dj = 1 if 'dj' in musics else 0
     music_live = 1 if 'live' in musics else 0
     music_background = 1 if 'background' in musics else 0
