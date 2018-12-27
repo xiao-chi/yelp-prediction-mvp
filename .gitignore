@@ -1,6 +1,7 @@
 .DS_Store
 .ipynb_checkpoints
 .idea/
+__pycache__/
 datasets/lasvegas_american_pr2_reviews.csv
 datasets/odyssey_reviews.csv
 datasets/odyssey_reviews_sentiments.csv
