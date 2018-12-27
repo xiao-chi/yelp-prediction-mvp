@@ -33,7 +33,8 @@ index_page = html.Div([
 
 available_cities = ['Las Vegas', 'Calgary', 'Toronto']
 
-price_ranges = [1, 2, 3, 4]
+three_price_ranges = [1,2,3]
+all_price_ranges = [1, 2, 3, 4]
 cuisines = ['Italian', 'American', 'Chinese']
 
 insights_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
@@ -63,7 +64,7 @@ insights_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
         html.Div(['Price Range'], style={'font-weight': 'bold'}),
         dcc.Dropdown(
             id='price_ranges_dropdown',
-            options=[{'label': i, 'value': i} for i in price_ranges],
+            options=[{'label': i, 'value': i} for i in all_price_ranges],
             value=2,
         )]),
     html.Iframe(id='map', srcDoc=open('maps/lasvegas_american_2.html', 'r').read(), width='100%', height='600'),
@@ -113,13 +114,13 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
         html.Div(['Price Range'], style={'font-weight': 'bold'}),
         dcc.Dropdown(
             id='price_ranges_dropdown_2',
-            options=[{'label': i, 'value': i} for i in price_ranges],
+            options=[{'label': i, 'value': i} for i in all_price_ranges],
             value=2,
         )], style={'width': '33%', 'display': 'inline-block'}),
 
     # Column 1
     html.Div([
-        html.H3(children="Business Features"),
+        html.H4(children="Business Features"),
         html.Div([
             html.Div(['Noise Level'], style={'font-weight': 'bold'}),
             dcc.Slider(
@@ -170,20 +171,21 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
         ),
         html.Br(),
         html.Div([
-            html.Div(['Music'], style={'font-weight': 'bold'}),
-            dcc.Checklist(
-                id='music_checkbox',
-                options=[
-                    {'label': 'None', 'value': 'none'},
-                    {'label': 'Background', 'value': 'background'},
-                    {'label': 'Live', 'value': 'live'},
-                    {'label': 'DJ', 'value': 'dj'},
-                    {'label': 'Karaoke', 'value': 'karaoke'}
-                ],
-                values=[],
-                labelStyle={'display': 'inline-block'}
-            )]
+            html.Div(['Smoking'], style={'font-weight': 'bold'}),
+            dcc.Slider(
+                id='slider_smoking',
+                min=0,
+                max=2,
+                marks={
+                    0: 'No',
+                    1: 'Outdoor',
+                    2: 'Yes'
+                },
+                value=0
+            )],
+            style={'marginLeft': 25, 'width': '60%'}
         ),
+        html.Br(),
         html.Div([
             html.Div(['Ambience'], style={'font-weight': 'bold'}),
             dcc.Checklist(
@@ -194,7 +196,9 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
                     {'label': 'Classy', 'value': 'classy'},
                     {'label': 'Casual', 'value': 'casual'},
                     {'label': 'Hipster', 'value': 'hipster'},
-                    {'label': 'Intimate', 'value': 'intimate'}
+                    {'label': 'Intimate', 'value': 'intimate'},
+                    {'label': 'Upscale', 'value': 'upscale'},
+                    {'label': 'Touristy', 'value': 'touristy'}
                 ],
                 values=[],
                 labelStyle={'display': 'inline-block'}
@@ -246,11 +250,88 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
                 ],
                 values=[],
                 labelStyle={'display': 'inline-block'})
-            ])
-        ], style={'width': '33%', 'display': 'inline-block'}),
+        ]),
+        html.Div([
+            html.Div(['Music'], style={'font-weight': 'bold'}),
+            dcc.Checklist(
+                id='music_checkbox',
+                options=[
+                    {'label': 'None', 'value': 'none'},
+                    {'label': 'Background', 'value': 'background'},
+                    {'label': 'Live', 'value': 'live'},
+                    {'label': 'DJ', 'value': 'dj'},
+                    {'label': 'Karaoke', 'value': 'karaoke'},
+                    {'label': 'Jukebox', 'value': 'jukebox'},
+                    {'label': 'Video', 'value': 'video'}
+                ],
+                values=[],
+                labelStyle={'display': 'inline-block'}
+            )]
+        )], style={'width': '33%', 'display': 'inline-block'}),
     # Column 2
     html.Div([
-        html.H3(children="Prediction after 6 months"),
+        html.H4(children='Hours Open'),
+        html.Div(children="Input number of hours open each day from 0-24"),
+        html.Div([
+            html.Span(['Monday'], style={'font-weight': 'bold', 'padding-right': '44px'}),
+            dcc.Input(id='monday_hours', type='number', min='0', max='24', value='0')]
+        ),
+        html.Div([
+            html.Span(['Tuesday'], style={'font-weight': 'bold', 'padding-right': '45px'}),
+            dcc.Input(id='tuesday_hours', type='number', min='0', max='24', value='0')
+        ]),
+        html.Div([
+            html.Span(['Wednesday'], style={'font-weight': 'bold', 'padding-right': '18px'}),
+            dcc.Input(id='wednesday_hours', type='number', min='0', max='24', value='0')
+        ]),
+        html.Div([
+            html.Span(['Thursday'], style={'font-weight': 'bold', 'padding-right': '41px'}),
+            dcc.Input(id='thursday_hours', type='number', min='0', max='24', value='0')
+        ]),
+        html.Div([
+            html.Span(['Friday'], style={'font-weight': 'bold', 'padding-right': '61px'}),
+            dcc.Input(id='friday_hours', type='number', min='0', max='24', value='0')
+        ]),
+        html.Div([
+            html.Span(['Saturday'], style={'font-weight': 'bold', 'padding-right': '41px'}),
+            dcc.Input(id='saturday_hours', type='number', min='0', max='24', value='0')
+        ]),
+        html.Div([
+            html.Span(['Sunday'], style={'font-weight': 'bold', 'padding-right': '51px'}),
+            dcc.Input(id='sunday_hours', type='number', min='0', max='24', value='0')
+        ]),
+        html.Br(),
+        html.Div([
+            html.H4(children='Additional Features'),
+            html.Div('Optional Features', style={'font-style': 'italic'}),
+            dcc.Checklist(
+                id='additional_features_checkbox',
+                options=[
+                    {'label': 'Bike Parking', 'value': 'bike_parking'},
+                    {'label': 'Accepts Credit Card', 'value': 'accept_card'},
+                    {'label': 'Catering', 'value': 'caters'},
+                    {'label': 'Coat Check', 'value': 'coat_check'},
+                    {'label': 'Good For Kids', 'value': 'good_for_kids'},
+                    {'label': 'Happy Hour', 'value': 'happy_hour'},
+                    {'label': 'Has TV', 'value': 'has_tv'},
+                    {'label': 'Outdoor Seating', 'value': 'outdoor_seating'},
+                    {'label': 'Delivery', 'value': 'delivery'},
+                    {'label': 'Good For Groups', 'value': 'good_for_groups'},
+                    {'label': 'Reservations', 'value': 'reservations'},
+                    {'label': 'Table Service', 'value': 'table_service'},
+                    {'label': 'Take Out', 'value': 'take_out'},
+                    {'label': 'Wheelchair Accessible', 'value': 'wheelchair_accessible'},
+                    {'label': 'Casual Attire', 'value': 'attire_casual'},
+                    {'label': 'Dressy Attire', 'value': 'attire_dressy'}
+                ],
+                values=[],
+                labelStyle={'display': 'inline-block'}
+            )
+        ]),
+    ], style={'width': '33%', 'display': 'inline-block', 'vertical-align': 'top'}),
+    # Column 3
+    html.Div([
+        html.H4(children="Prediction after 6 months"),
         html.Div([
             html.Div(['Number of Positive Reviews'], style={'font-weight': 'bold'}),
             dcc.Input(id='pos_reviews_keypress', type='number', min='0', value='0'),
@@ -271,17 +352,13 @@ prediction_layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             dcc.Input(id='review_count_keypress', type='number', min='0', value='0'),
         ]),
         html.Br(),
-        html.Button(id='submit_button', n_clicks=0, children='Submit')],
-        style={'width': '33%', 'display': 'inline-block', 'vertical-align': 'top'}),
-
-    # Column 3
-    html.Div([
+        html.Button(id='submit_button', n_clicks=0, children='Submit'),
         html.H3('Yelp Rating Prediction'),
-        html.H1(children='0.0', id='rating_prediction')],
+        html.H1(children='0.0', id='rating_prediction', style={'color': colors['text']})],
         style={'width': '33%', 'display': 'inline-block', 'float': 'right'}),
     html.Div(id='prediction-content'),
     html.Br(),
-    dcc.Link('Go back to home', href='/')
+    html.Div([dcc.Link('Go back to home', href='/')])
 ])
 
 
@@ -295,6 +372,17 @@ def display_page(pathname):
         return prediction_layout
     else:
         return index_page
+
+
+# exclude price range 4 for calgary + chinese
+@app.callback(dash.dependencies.Output('price_ranges_dropdown_2', 'options'),
+              [dash.dependencies.Input('cities_dropdown_2', 'value'),
+               dash.dependencies.Input('cuisines_dropdown_2', 'value')])
+def set_price_range_options(city, cuisine):
+    if city == 'Calgary' and cuisine == 'Chinese':
+        return [{'label': i, 'value': i} for i in three_price_ranges]
+    else:
+        return [{'label': i, 'value': i} for i in all_price_ranges]
 
 
 @app.callback(dash.dependencies.Output('review_count_keypress', 'value'),
@@ -314,18 +402,43 @@ def calculate_total_reviews(pos_count, neu_count, neg_count):
                dash.dependencies.State('slider_noise', 'value'),
                dash.dependencies.State('slider_wifi', 'value'),
                dash.dependencies.State('slider_alcohol', 'value'),
+               dash.dependencies.State('slider_smoking', 'value'),
                dash.dependencies.State('music_checkbox', 'values'),
                dash.dependencies.State('ambience_checkbox', 'values'),
                dash.dependencies.State('good_for_checkbox', 'values'),
                dash.dependencies.State('best_night_checkbox', 'values'),
                dash.dependencies.State('parking_checkbox', 'values'),
+               dash.dependencies.State('monday_hours', 'value'),
+               dash.dependencies.State('tuesday_hours', 'value'),
+               dash.dependencies.State('wednesday_hours', 'value'),
+               dash.dependencies.State('thursday_hours', 'value'),
+               dash.dependencies.State('friday_hours', 'value'),
+               dash.dependencies.State('saturday_hours', 'value'),
+               dash.dependencies.State('sunday_hours', 'value'),
+               dash.dependencies.State('additional_features_checkbox', 'values'),
                dash.dependencies.State('pos_reviews_keypress', 'value'),
                dash.dependencies.State('neu_reviews_keypress', 'value'),
                dash.dependencies.State('neg_reviews_keypress', 'value'),
                dash.dependencies.State('review_count_keypress', 'value')
                ])
-def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, musics, ambiences, good_fors, best_nights,
-               parkings, pos_reviews, neu_reviews, neg_reviews, review_count):
+def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, smoking, musics, ambiences, good_fors,
+               best_nights, parkings, m_hours, tu_hours, w_hours, th_hours, f_hours, sa_hours, su_hours,
+               additional_features, pos_reviews, neu_reviews, neg_reviews, review_count):
+    m_hours = int(m_hours)
+    tu_hours = int(tu_hours)
+    w_hours = int(w_hours)
+    th_hours = int(th_hours)
+    f_hours = int(f_hours)
+    sa_hours = int(sa_hours)
+    su_hours = int(su_hours)
+
+    total_hours = m_hours + tu_hours + w_hours + th_hours + f_hours + sa_hours + su_hours
+    open_on_weekends = 0
+    if sa_hours > 0:
+        open_on_weekends += 1
+    if su_hours > 0:
+        open_on_weekends += 1
+
     pos_reviews = int(pos_reviews)
     neu_reviews = int(neu_reviews)
     neg_reviews = int(neg_reviews)
@@ -344,12 +457,18 @@ def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, music
     noise_loud = 1 if noise_level is 2 else 0
     noise_very_loud = 1 if noise_level is 3 else 0
 
+    smoking_no = 1 if smoking is 0 else 0
+    smoking_outdoor = 1 if smoking is 1 else 0
+    smoking_yes = 1 if smoking is 2 else 0
+
     trendy = 1 if 'trendy' in ambiences else 0
     classy = 1 if 'classy' in ambiences else 0
     romantic = 1 if 'romantic' in ambiences else 0
     intimate = 1 if 'intimate' in ambiences else 0
     hipster = 1 if 'hipster' in ambiences else 0
     casual = 1 if 'casual' in ambiences else 0
+    upscale = 1 if 'upscale' in ambiences else 0
+    touristy = 1 if 'touristy' in ambiences else 0
 
     good_for_dinner = 1 if 'dinner' in good_fors else 0
     good_for_brunch = 1 if 'brunch' in good_fors else 0
@@ -377,6 +496,25 @@ def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, music
     music_live = 1 if 'live' in musics else 0
     music_background = 1 if 'background' in musics else 0
     music_karaoke = 1 if 'karaoke' in musics else 0
+    music_jukebox = 1 if 'jukebox' in musics else 0
+    music_video = 1 if 'video' in musics else 0
+
+    bike_parking = 1 if 'bike_parking' in additional_features else 0
+    accept_card = 1 if 'accept_card' in additional_features else 0
+    caters = 1 if 'caters' in additional_features else 0
+    coat_check = 1 if 'coat_check' in additional_features else 0
+    good_for_kids = 1 if 'good_for_kids' in additional_features else 0
+    happy_hour = 1 if 'happy_hour' in additional_features else 0
+    has_tv = 1 if 'has_tv' in additional_features else 0
+    outdoor_seating = 1 if 'outdoor_seating' in additional_features else 0
+    delivery = 1 if 'delivery' in additional_features else 0
+    good_for_groups = 1 if 'good_for_groups' in additional_features else 0
+    reservations = 1 if 'reservations' in additional_features else 0
+    table_service = 1 if 'table_service' in additional_features else 0
+    take_out = 1 if 'take_out' in additional_features else 0
+    wheelchair_accessible = 1 if 'wheelchair_accessible' in additional_features else 0
+    attire_casual = 1 if 'attire_casual' in additional_features else 0
+    attire_dressy = 1 if 'attire_dressy' in additional_features else 0
 
     cat_dict = {'cat_Calgary_american_1.0': 0, 'cat_Calgary_american_2.0': 0, 'cat_Calgary_american_3.0': 0,
                 'cat_Calgary_american_4.0': 0, 'cat_Calgary_american_nan': 0, 'cat_Calgary_chinese_1.0': 0,
@@ -393,38 +531,47 @@ def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, music
                 'cat_Toronto_chinese_3.0': 0, 'cat_Toronto_chinese_4.0': 0, 'cat_Toronto_chinese_nan': 0,
                 'cat_Toronto_italian_1.0': 0, 'cat_Toronto_italian_2.0': 0, 'cat_Toronto_italian_3.0': 0,
                 'cat_Toronto_italian_4.0': 0, 'cat_Toronto_italian_nan': 0}
+    category = 'cat_' + city + '_' + cuisine.lower() + '_' + str(float(price))
+    cat_dict[category] = 1
 
-    y = ['BikeParking', 'BusinessAcceptsCreditCards', 'Caters', 'CoatCheck', 'GoodForKids', 'HappyHour', 'HasTV',
-         'OutdoorSeating', 'RestaurantsDelivery', 'RestaurantsGoodForGroups', 'RestaurantsReservations',
-         'RestaurantsTableService', 'RestaurantsTakeOut', 'WheelchairAccessible', 'Friday', 'Monday', 'Saturday',
-         'Sunday', 'Thursday', 'Tuesday', 'Wednesday', review_count, 'cat_Calgary_american_1.0',
-         'cat_Calgary_american_2.0',
-         'cat_Calgary_american_3.0', 'cat_Calgary_american_4.0', 'cat_Calgary_american_nan',
-         'cat_Calgary_chinese_1.0', 'cat_Calgary_chinese_2.0', 'cat_Calgary_chinese_3.0', 'cat_Calgary_chinese_nan',
-         'cat_Calgary_italian_1.0', 'cat_Calgary_italian_2.0', 'cat_Calgary_italian_3.0', 'cat_Calgary_italian_4.0',
-         'cat_Calgary_italian_nan', 'cat_Las Vegas_american_1.0', 'cat_Las Vegas_american_2.0',
-         'cat_Las Vegas_american_3.0',
-         'cat_Las Vegas_american_4.0', 'cat_Las Vegas_american_nan', 'cat_Las Vegas_chinese_1.0',
-         'cat_Las Vegas_chinese_2.0',
-         'cat_Las Vegas_chinese_3.0', 'cat_Las Vegas_chinese_4.0', 'cat_Las Vegas_chinese_nan',
-         'cat_Las Vegas_italian_1.0',
-         'cat_Las Vegas_italian_2.0', 'cat_Las Vegas_italian_3.0', 'cat_Las Vegas_italian_4.0',
-         'cat_Las Vegas_italian_nan',
-         'cat_Toronto_american_1.0', 'cat_Toronto_american_2.0', 'cat_Toronto_american_3.0', 'cat_Toronto_american_4.0',
-         'cat_Toronto_american_nan', 'cat_Toronto_chinese_1.0', 'cat_Toronto_chinese_2.0', 'cat_Toronto_chinese_3.0',
-         'cat_Toronto_chinese_4.0', 'cat_Toronto_chinese_nan', 'cat_Toronto_italian_1.0', 'cat_Toronto_italian_2.0',
-         'cat_Toronto_italian_3.0', 'cat_Toronto_italian_4.0', 'cat_Toronto_italian_nan', neg_reviews,
-         neu_reviews, pos_reviews, romantic, intimate, classy,
-         hipster, 'ambience_touristy', trendy, 'ambience_upscale', casual,
-         good_for_dessert, good_for_late_night, good_for_lunch, good_for_dinner, good_for_breakfast,
-         good_for_brunch, parking_garage, parking_street, parking_validated, parking_lot, parking_valet,
-         'TotalOpenTimeInWeek', 'NumberOfWeekdaysWithEarlyOpening', 'NumberOfWeekdaysWithLateClosing', 'OpenOnWeekends',
-         best_night_monday, best_night_tuesday, best_night_wednesday, best_night_thursday, best_night_friday,
-         best_night_saturday, best_night_sunday, music_dj, music_background, no_music, music_karaoke,
-         music_live, 'music_video', 'music_jukebox', full_bar, beer_and_wine, no_alcohol, 'smoking_outdoor',
-         'smoking_no', 'smoking_yes', free_wifi, no_wifi, paid_wifi, noise_average, noise_loud, noise_quiet,
-         noise_very_loud, 0, 0]
-    inputs = np.array([])
+    # set average values from training data
+    weekdays_early_opening = 0.92
+    weekdays_late_closing = 3.28
+
+    # BikeParking, BusinessAcceptsCreditCards, Caters, CoatCheck, GoodForKids, HappyHour, HasTV, OutdoorSeating,
+    # RestaurantsDelivery, RestaurantsGoodForGroups, RestaurantsReservations, RestaurantsTableService,
+    # RestaurantsTakeOut, WheelchairAccessible
+    inputs = np.array([
+        bike_parking, accept_card, caters, coat_check, good_for_kids, happy_hour, has_tv, outdoor_seating, delivery,
+        good_for_groups, reservations, table_service, take_out, wheelchair_accessible, f_hours, m_hours, sa_hours,
+        su_hours, th_hours, tu_hours, w_hours, review_count, cat_dict['cat_Calgary_american_1.0'],
+        cat_dict['cat_Calgary_american_2.0'], cat_dict['cat_Calgary_american_3.0'],
+        cat_dict['cat_Calgary_american_4.0'], cat_dict['cat_Calgary_american_nan'],
+        cat_dict['cat_Calgary_chinese_1.0'], cat_dict['cat_Calgary_chinese_2.0'], cat_dict['cat_Calgary_chinese_3.0'],
+        cat_dict['cat_Calgary_chinese_nan'], cat_dict['cat_Calgary_italian_1.0'], cat_dict['cat_Calgary_italian_2.0'],
+        cat_dict['cat_Calgary_italian_3.0'], cat_dict['cat_Calgary_italian_4.0'], cat_dict['cat_Calgary_italian_nan'],
+        cat_dict['cat_Las Vegas_american_1.0'], cat_dict['cat_Las Vegas_american_2.0'],
+        cat_dict['cat_Las Vegas_american_3.0'], cat_dict['cat_Las Vegas_american_4.0'],
+        cat_dict['cat_Las Vegas_american_nan'], cat_dict['cat_Las Vegas_chinese_1.0'],
+        cat_dict['cat_Las Vegas_chinese_2.0'], cat_dict['cat_Las Vegas_chinese_3.0'],
+        cat_dict['cat_Las Vegas_chinese_4.0'], cat_dict['cat_Las Vegas_chinese_nan'],
+        cat_dict['cat_Las Vegas_italian_1.0'], cat_dict['cat_Las Vegas_italian_2.0'],
+        cat_dict['cat_Las Vegas_italian_3.0'], cat_dict['cat_Las Vegas_italian_4.0'],
+        cat_dict['cat_Las Vegas_italian_nan'], cat_dict['cat_Toronto_american_1.0'],
+        cat_dict['cat_Toronto_american_2.0'], cat_dict['cat_Toronto_american_3.0'],
+        cat_dict['cat_Toronto_american_4.0'], cat_dict['cat_Toronto_american_nan'],
+        cat_dict['cat_Toronto_chinese_1.0'], cat_dict['cat_Toronto_chinese_2.0'], cat_dict['cat_Toronto_chinese_3.0'],
+        cat_dict['cat_Toronto_chinese_4.0'], cat_dict['cat_Toronto_chinese_nan'], cat_dict['cat_Toronto_italian_1.0'],
+        cat_dict['cat_Toronto_italian_2.0'], cat_dict['cat_Toronto_italian_3.0'], cat_dict['cat_Toronto_italian_4.0'],
+        cat_dict['cat_Toronto_italian_nan'], neg_reviews, neu_reviews, pos_reviews, romantic, intimate, classy,
+        hipster, touristy, trendy, upscale, casual, good_for_dessert, good_for_late_night, good_for_lunch,
+        good_for_dinner, good_for_breakfast, good_for_brunch, parking_garage, parking_street, parking_validated,
+        parking_lot, parking_valet, total_hours, weekdays_early_opening, weekdays_late_closing, open_on_weekends,
+        best_night_monday, best_night_tuesday, best_night_wednesday, best_night_thursday,
+        best_night_friday, best_night_saturday, best_night_sunday, music_dj, music_background, no_music, music_karaoke,
+        music_live, music_video, music_jukebox, full_bar, beer_and_wine, no_alcohol, smoking_outdoor,
+        smoking_no, smoking_yes, free_wifi, no_wifi, paid_wifi, noise_average, noise_loud, noise_quiet,
+        noise_very_loud, attire_casual, attire_dressy])
     inputs = inputs.reshape(1, -1)
     star_prediction = predict(inputs)
     stars = 5.0 if star_prediction > 5 else star_prediction
@@ -433,5 +580,5 @@ def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, music
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False, port=8050, host='127.0.0.1')
-app.run_server(debug=False)
+    app.run_server(debug=True, port=8050, host='127.0.0.1')
+app.run_server(debug=True)
