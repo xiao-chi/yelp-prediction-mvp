@@ -45,9 +45,9 @@ def create_map(cuisine, location, price):
     # create map with coordinates of location specified
     tm_map = folium.Map(location=COORDINATES.get(location), zoom_start=11)
 
-    pos_df = pd.read_csv('datasets/topic_modelling/pos_bsns_' + location.replace(" ", "").lower()
+    pos_df = pd.read_csv('data/datasets/topic_modelling/pos_bsns_' + location.replace(" ", "").lower()
                          + "_" + cuisine.lower() + '.csv')
-    neg_df = pd.read_csv('datasets/topic_modelling/neg_bsns_' + location.replace(" ", "").lower()
+    neg_df = pd.read_csv('data/datasets/topic_modelling/neg_bsns_' + location.replace(" ", "").lower()
                          + "_" + cuisine.lower() + '.csv')
 
     # get restaurants in specified price range only

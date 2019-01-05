@@ -1,5 +1,5 @@
 # insights.py
-# Restaurant Insights Layout Page
+# Restaurant Insights Layout API
 
 import dash
 import dash_core_components as dcc
@@ -21,6 +21,7 @@ layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             'color': colors['text']
         }
     ),
+    # City/Cuisine/Location dropdowns
     html.Div([
         html.Div(['City'], style={'font-weight': 'bold'}),
         dcc.Dropdown(
@@ -56,6 +57,8 @@ layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
                dash.dependencies.Input('price_ranges_dropdown', 'value')
                ])
 def render_map(city, cuisine, price_range):
+    # opens corresponding map html file (in maps folder) for selected city/cuisine/price range in dropdown
+    # maps created from create_topic_modelling_maps.py script
     city = city.replace(" ", "")
     file_to_open = 'maps/' + city + '_' + cuisine + '_' + str(price_range) + '.html'
     file_to_open = file_to_open.lower()

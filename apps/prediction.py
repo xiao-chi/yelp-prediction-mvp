@@ -1,5 +1,5 @@
 # prediction.py
-# Rating Prediction Page
+# Rating Prediction API
 
 import dash
 import dash_core_components as dcc
@@ -14,7 +14,7 @@ three_price_ranges = [1, 2, 3]
 all_price_ranges = [1, 2, 3, 4]
 cuisines = ['Italian', 'American', 'Chinese']
 
-# set average values from training data
+# set average values from training data (from average_values_feature.ipynb)
 weekdays_early_opening = 0.92
 weekdays_late_closing = 3.28
 
@@ -27,6 +27,7 @@ layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             'color': colors['text']
         }
     ),
+    # City/Cuisine/Price Range dropdowns
     html.Div([
         html.Div(['City'], style={'font-weight': 'bold'}),
         dcc.Dropdown(
@@ -50,7 +51,7 @@ layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             value=2,
         )], style={'width': '33%', 'display': 'inline-block'}),
 
-    # Column 1
+    # Column 1/Essential Features
     html.Div([
         html.H4(children="Business Features"),
         html.Div([
@@ -200,7 +201,7 @@ layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
                 labelStyle={'display': 'inline-block'}
             )]
         )], style={'width': '33%', 'display': 'inline-block'}),
-    # Column 2
+    # Column 2 Times of Business & Optional Features
     html.Div([
         html.H4(children='Hours Open'),
         html.Div(children="Input number of hours open each day from 0-24"),
@@ -261,7 +262,7 @@ layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
             )
         ]),
     ], style={'width': '33%', 'display': 'inline-block', 'vertical-align': 'top'}),
-    # Column 3
+    # Column 3 - Review count estimate and rating prediction
     html.Div([
         html.H4(children="Prediction after 6 months"),
         html.Div([
@@ -294,7 +295,7 @@ layout = html.Div(style={'fontFamily': 'Century Gothic'}, children=[
 ])
 
 
-# exclude price range 4 for calgary + chinese
+# exclude price range 4 for calgary + chinese combination (no Chinese Calgary PR4 Restaurant in dataset)
 @app.callback(dash.dependencies.Output('price_ranges_dropdown_2', 'options'),
               [dash.dependencies.Input('cities_dropdown_2', 'value'),
                dash.dependencies.Input('cuisines_dropdown_2', 'value')])
@@ -364,6 +365,7 @@ def calculate_total_reviews(pos_count, neu_count, neg_count):
 def prediction(n_clicks, city, cuisine, price, noise_level, wifi, alcohol, smoking, musics, ambiences, good_fors,
                best_nights, parkings, m_hours, tu_hours, w_hours, th_hours, f_hours, sa_hours, su_hours,
                additional_features, pos_reviews, neu_reviews, neg_reviews, review_count):
+    # gather features for prediction based on selections in dashboard
     m_hours = int(m_hours)
     tu_hours = int(tu_hours)
     w_hours = int(w_hours)

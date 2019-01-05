@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# extract_features.py
+# Step 1: extract_features.py
 # This script breaks down business features from yelp business json file (nested json objects each become a
 # subsequent column). For example, the 6 parking categories are each moved to their own column.
 # This will filter out restaurants of cuisine specified in location specified and write this new dataset to
@@ -91,7 +91,7 @@ def feature_breakdown(cuisine, location, price_range_value, file):
         dataset = data_frame.copy()
     else:  # extract from yelp json dataset with specified parameters
         businesses = []
-        with open('datasets/yelp_academic_dataset_business.json', 'r') as f:
+        with open('../datasets/yelp_academic_dataset_business.json', 'r') as f:
             for line in f:
                 businesses.append(json.loads(line))
         extracted_data = json_normalize(businesses)
