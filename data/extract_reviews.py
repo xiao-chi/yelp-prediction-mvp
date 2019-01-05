@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# extract_reviews.py
+# Step 1: extract_reviews.py
 # This script extracts all reviews from Yelp json file and filters out only reviews from business ids in file passed.
 # Reviews are saved as <original file name>_reviews.csv
 # Run this to perform review extraction: extract_reviews.py -f <file_with_business_ids>

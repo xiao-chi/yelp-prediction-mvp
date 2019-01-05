@@ -2,9 +2,9 @@
 .ipynb_checkpoints
 .idea/
 __pycache__/
-datasets/lasvegas_american_pr2_reviews.csv
-datasets/odyssey_reviews.csv
-datasets/odyssey_reviews_sentiments.csv
-datasets/odyssey_reviews_sentiments_grouped.csv
-datasets/yelp_academic_dataset_review.json
-datasets/yelp_academic_dataset_business.json
+data/datasets/lasvegas_american_pr2_reviews.csv
+data/datasets/odyssey_reviews.csv
+data/datasets/odyssey_reviews_sentiments.csv
+data/datasets/odyssey_reviews_sentiments_grouped.csv
+data/datasets/yelp_academic_dataset_review.json
+data/datasets/yelp_academic_dataset_business.json

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# append_datasets.py
+# Step 2: append_datasets.py (optional)
 # This script will append similar datasets (please ensure columns are the same in all files being passed).
+# For example: reviews & reviews or features & features
 # Output file will be saved in datasets folder.
 # This should preferably be run on several files after the extract_features.py or extract_reviews.py script.
 # Run this: append_datasets.py -a <file_name> -a <file_name> [no limit to number of files] -o <output_file_name>

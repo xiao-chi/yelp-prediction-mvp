@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# sentiment_analysis.py
+# Step 3: sentiment_analysis.py
 # This script reads all reviews from the passed reviews csv file and performs sentiment analysis.
 # Reviews are categorized into Positive, Neutral, or Negative categories.
 # One dataset (with business ids and reviews) is saved as <original file name>_sentiments.csv (used for topic
@@ -36,7 +36,7 @@ def sentiment_analysis(reviews_file):
 
     sia = SentimentIntensityAnalyzer()
     results = []
-	
+
     # Determine polarity
     for business_id, line, stars in zip(reviews_df['business_id'], reviews_df['text'], reviews_df['stars']):
         pol_score = sia.polarity_scores(line)

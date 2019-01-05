@@ -1,5 +1,5 @@
-# index.py
-# App index page, launch app with this script python3 index.py
+# app_index.py
+# App index page, launch app with this script, run: python3 app_index.py
 
 import dash
 from app import app
@@ -12,6 +12,7 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
+# Display 2 different page options
 layout = html.Div([
     html.Div([
         dcc.Link('Restaurant Insights', href='/insights'),

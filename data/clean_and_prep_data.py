@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# clean_and_prep_data.py
+# Step 4: clean_and_prep_data.py
 # This script uses the restaurants data, reviews data, and sentiments data to create a final dataset to use for
 # the prediction models. The reviews dataset is used to get an average star-rating to replace the Yelp categorized
 # star-rating. The sentiments dataset is merged with the restaurants dataset. Dummy variables are also created for
@@ -12,6 +12,7 @@
 import sys
 import argparse
 import pandas as pd
+import numpy as np
 
 
 parser = argparse.ArgumentParser(description='Update stars from reviews average and prepare dataset for regression')
@@ -72,6 +73,11 @@ features_df = pd.concat([features_df, pd.get_dummies(features_df['cat'], prefix=
 # Merge new columns into Features Dataset
 features_df = pd.merge(features_df, sentiment_df, how='left', on='business_id')
 features_df = pd.merge(features_df, reviews_df, on='business_id', how='left')
+
+# Assume 0 if missing
+num_cols = ['positive_reviews', 'neutral_reviews', 'negative_reviews']
+for col in num_cols:
+    features_df[col] = features_df[col].replace(np.NaN, 0.0)
 
 # Remove unneeded columns
 col_remove = ['address', 'categories', 'city', 'cuisine', 'latitude', 'longitude',
